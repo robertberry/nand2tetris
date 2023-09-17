@@ -33,3 +33,7 @@ eclipse-*bin/
 .bazelversion
 # User-specific .bazelrc
 user.bazelrc
+
+# Some more Emacs stuff
+\#*\#
+.\#*
