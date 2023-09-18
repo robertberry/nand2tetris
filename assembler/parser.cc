@@ -2,7 +2,11 @@
 
 #include <ctype.h>
 
+#include "util/parsing/whitespace.h"
+
 namespace hack {
+
+using ::util_parsing::SkipWhitespaceAndComments;
 
 constexpr int kMaxLineLength = 256;
 
@@ -23,7 +27,7 @@ enum class CParserState {
 }  // namespace
 
 void Parser::Advance() {
-  SkipWhitespaceAndComments();
+  SkipWhitespaceAndComments(input_stream_);
 
   char ch = input_stream_.get();
   if (ch == '@') {
@@ -78,28 +82,8 @@ void Parser::Advance() {
 }
 
 bool Parser::HasMoreLines() {
-  SkipWhitespaceAndComments();
+  SkipWhitespaceAndComments(input_stream_);
   return input_stream_.peek() != EOF;
-}
-
-void Parser::SkipWhitespaceAndComments() {
-  int ch;
-  bool consuming_line = false;
-  while ((ch = input_stream_.get()) != EOF) {
-    if (consuming_line && ch == '\n') {
-      consuming_line = false;
-      continue;
-    }
-    if (consuming_line || isspace(ch)) {
-      continue;
-    }
-    if (ch == '/' && input_stream_.peek() == '/') {
-      consuming_line = true;
-      continue;
-    }
-    break;
-  }
-  input_stream_.unget();
 }
 
 std::string Parser::ConsumeSymbolOrConstant() {

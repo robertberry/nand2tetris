@@ -56,8 +56,6 @@ class Parser final {
 
   Instruction current_instruction_;
 
-  void SkipWhitespaceAndComments();
-
   std::string ConsumeSymbolOrConstant();
 
   std::string ConsumeSymbol();

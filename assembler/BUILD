@@ -29,7 +29,10 @@ cc_test(
 cc_library(
   name = "parser",
   hdrs = ["parser.h"],
-  srcs = ["parser.cc"]
+  srcs = ["parser.cc"],
+  deps = [
+    "//util/parsing:whitespace"
+  ]
 )
 
 cc_test(
