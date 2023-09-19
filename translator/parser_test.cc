@@ -67,5 +67,45 @@ TEST(ParserTest, Arg1ArithmeticIsCommandName) {
   EXPECT_EQ(instruction.arg1, command);
 }
 
+TEST(ParserTest, Arg1PushIsMemorySegment) {
+  std::istringstream input("push constant 16");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.arg1, "constant");
+}
+
+TEST(ParserTest, Arg2PushIsOffset) {
+  std::istringstream input("push constant 16");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.arg2, 16);
+}
+
+TEST(ParserTest, Arg1PopIsMemorySegment) {
+  std::istringstream input("pop local 32");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.arg1, "local");
+}
+
+TEST(ParserTest, Arg2PopIsOffset) {
+  std::istringstream input("pop local 32");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.arg2, 32);
+}
+
 }  // namespace
 }  // namespace translator
