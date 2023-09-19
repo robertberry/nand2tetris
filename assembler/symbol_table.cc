@@ -5,38 +5,30 @@
 
 namespace hack {
 
-namespace {
-
-constexpr std::pair<std::string_view, int> sym(std::string_view key, int value) {
-  return std::make_pair(key, value);
-}
-
-}  // namespace
-
 constexpr std::pair<std::string_view, int> kSymbolInitTable[] = {
-  sym("R0", 0),
-  sym("R1", 1),
-  sym("R2", 2),
-  sym("R3", 3),
-  sym("R4", 4),
-  sym("R5", 5),
-  sym("R6", 6),
-  sym("R7", 7),
-  sym("R8", 8),
-  sym("R9", 9),
-  sym("R10", 10),
-  sym("R11", 11),
-  sym("R12", 12),
-  sym("R13", 13),
-  sym("R14", 14),
-  sym("R15", 15),
-  sym("SP", 0),
-  sym("LCL", 1),
-  sym("ARG", 2),
-  sym("THIS", 3),
-  sym("THAT", 4),
-  sym("SCREEN", 16384),
-  sym("KBD", 24576)
+  {"R0", 0},
+  {"R1", 1},
+  {"R2", 2},
+  {"R3", 3},
+  {"R4", 4},
+  {"R5", 5},
+  {"R6", 6},
+  {"R7", 7},
+  {"R8", 8},
+  {"R9", 9},
+  {"R10", 10},
+  {"R11", 11},
+  {"R12", 12},
+  {"R13", 13},
+  {"R14", 14},
+  {"R15", 15},
+  {"SP", 0},
+  {"LCL", 1},
+  {"ARG", 2},
+  {"THIS", 3},
+  {"THAT", 4},
+  {"SCREEN", 16384},
+  {"KBD", 2457}
 };
 
 SymbolTable SymbolTable::Create() {

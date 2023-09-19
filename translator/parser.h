@@ -1,8 +1,10 @@
 #ifndef TRANSLATOR_PARSER_H_
 #define TRANSLATOR_PARSER_H_
 
+#include <optional>
 #include <iostream>
 #include <string>
+#include <string_view>
 
 namespace translator {
 
@@ -46,6 +48,8 @@ class Parser {
   }
 
  private:
+  static std::optional<CommandType> CommandTypeFromString(std::string_view s);
+  
   std::istream& input_;
 
   Instruction current_instruction_;
