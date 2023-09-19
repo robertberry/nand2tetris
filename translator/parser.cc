@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "util/parsing/whitespace.h"
 
@@ -30,6 +31,17 @@ constexpr std::pair<std::string_view, CommandType> kCommandTable[] = {
   {"return", CommandType::kCReturn}
 };
 
+constexpr std::string_view kMemorySegments[] = {
+  "argument",
+  "local",
+  "static",
+  "constant",
+  "this",
+  "that",
+  "pointer",
+  "temp"
+};
+
 bool Parser::HasMoreLines() {
   SkipWhitespaceAndComments(input_);
   return input_.peek() != EOF;
@@ -50,10 +62,15 @@ void Parser::Advance() {
       break;
 
     case CommandType::kCPush:
-    case CommandType::kCPop:
-      current_instruction_.arg1 = ExpectWord("Expected memory segment");
+    case CommandType::kCPop: {
+      std::string memory_segment = ExpectWord("Expected memory segment");
+      if (!IsMemorySegment(memory_segment)) {
+        ReportError("Not a memory segment name");
+      }
+      current_instruction_.arg1 = std::move(memory_segment);
       current_instruction_.arg2 = ExpectNumber("Expected memory offset");
       break;
+    }
 
     default:
       ReportError("Unsupported operation");
@@ -99,6 +116,15 @@ void Parser::ExpectEndOfLine(std::string_view error_message) {
     }
   }
   // Consider EOF to be equivalent to end of line, so do not report error.
+}
+
+bool Parser::IsMemorySegment(std::string_view segment_name) {
+  for (std::string_view segment : kMemorySegments) {
+    if (segment_name == segment) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void Parser::ReportError(std::string_view error_message) {

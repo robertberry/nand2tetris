@@ -66,6 +66,8 @@ class Parser {
 
   void ExpectEndOfLine(std::string_view error_message);
 
+  bool IsMemorySegment(std::string_view segment_name);
+
   void ReportError(std::string_view error_message);
 };
 
