@@ -59,6 +59,14 @@ class Parser {
   std::istream& input_;
 
   Instruction current_instruction_;
+
+  std::string ExpectWord(std::string_view error_message);
+
+  int ExpectNumber(std::string_view error_message);
+
+  void ExpectEndOfLine(std::string_view error_message);
+
+  void ReportError(std::string_view error_message);
 };
 
 }  // namespace translator
