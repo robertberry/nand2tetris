@@ -12,6 +12,14 @@ using ::util_parsing::SkipWhitespaceAndComments;
 // Command types by the string name of the command as used in the p-code.
 constexpr std::pair<std::string_view, CommandType> kCommandTable[] = {
   {"add", CommandType::kCArithmetic},
+  {"sub", CommandType::kCArithmetic},
+  {"neg", CommandType::kCArithmetic},
+  {"eq", CommandType::kCArithmetic},
+  {"gt", CommandType::kCArithmetic},
+  {"lt", CommandType::kCArithmetic},
+  {"and", CommandType::kCArithmetic},
+  {"or", CommandType::kCArithmetic},
+  {"not", CommandType::kCArithmetic},
   {"push", CommandType::kCPush},
   {"pop", CommandType::kCPop},
   {"goto", CommandType::kCGoto},
