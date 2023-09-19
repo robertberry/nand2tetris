@@ -37,7 +37,7 @@ struct Instruction {
 };
 
 // Parses VM p-code.
-class Parser {
+class Parser final {
  public:
   explicit Parser(std::istream& istream) : input_(istream) {}
   

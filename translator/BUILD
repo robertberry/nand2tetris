@@ -1,4 +1,10 @@
 cc_library(
+  name = "code_writer",
+  hdrs = ["code_writer.h"],
+  srcs = ["code_writer.cc"],
+)
+
+cc_library(
   name = "parser",
   hdrs = ["parser.h"],
   srcs = ["parser.cc"],
