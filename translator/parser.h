@@ -23,10 +23,16 @@ enum class CommandType {
 
 // A VM p-code instruction.
 struct Instruction {
+  // Returns the type of the command in the instruction.
   CommandType command_type;
 
+  // Returns the first argument of the command. For arithmetic commands, this is
+  // the command name itself, e.g. "sub". Should not be called for a return
+  // command.
   std::string arg1;
 
+  // Returns the second argument of the current command. Should only be called
+  // if the command is push, pop, function or call.
   int arg2;
 };
 
