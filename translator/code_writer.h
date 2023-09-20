@@ -36,6 +36,8 @@ class CodeWriter final {
   static std::string_view SegmentNameToAssemblySymbol(std::string_view segment_name);
 
   std::string GenSym();
+
+  void WriteSetAToLocation(std::string_view segment, int offset);
 };
 
 }  // namespace translator

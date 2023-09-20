@@ -168,38 +168,9 @@ void CodeWriter::WritePush(std::string_view segment, int offset) {
   if (segment == "constant") {
     output_ << "@" << offset << std::endl
             << "D=A" << std::endl;
-  } else if (segment == "this" || segment == "that" || segment == "argument"
-             || segment == "local") {
-    output_ << "@" << SegmentNameToAssemblySymbol(segment) << std::endl;
-    if (offset == 0) {
-      output_ << "A=M" << std::endl;
-    } else {
-      output_ << "D=M" << std::endl
-              << "@" << offset << std::endl
-              << "A=D+A" << std::endl;
-    }
+  } else {
+    WriteSetAToLocation(segment, offset);
     output_ << "D=M" << std::endl;
-  } else if (segment == "pointer") {
-    if (offset < 0 || offset > 1) {
-      // TODO: Better error handling.
-      std::cerr << "Invalid pointer offset: " << offset << std::endl;
-      exit(1);
-    }
-    std::string_view symbol = kPointerSymbolByOffset[offset];
-    output_ << "@" << symbol << std::endl
-            << "D=M" << std::endl;
-  } else if (segment == "temp") {
-    if (offset < 0 || offset > 7) {
-      // TODO: better error handling.
-      std::cerr << "Invalid temp offset: " << offset << std::endl;
-      exit(1);
-    }
-    int memory_location = 5 + offset;
-    output_ << "@" << memory_location << std::endl
-            << "D=M" << std::endl;
-  } else if (segment == "static") {
-    output_ << "@" << static_name_ << "." << offset << std::endl
-            << "D=M" << std::endl;
   }
 
   // Write contents of D to the stack.
@@ -211,11 +182,32 @@ void CodeWriter::WritePush(std::string_view segment, int offset) {
 }
 
 void CodeWriter::WritePop(std::string_view segment, int offset) {
-  // TODO
+  if (segment == "constant") {
+    // TODO: Better error handling
+    std::cerr << "Cannot pop onto a constant" << std::endl;
+    exit(1);
+  }
+
+  // Add comment explaining what is happening at a high level.
+  output_ << "// Pop to " << segment << "[" << offset << "]" << std::endl;
+  
+  // Pop data from top of stack onto D.
+  output_ << R"asm(@SP
+A=M
+D=M
+@SP
+M=M-1
+)asm";
+
+  // Navigate to desired memory location and write value.
+  WriteSetAToLocation(segment, offset);
+  output_ << "M=D" << std::endl << std::endl;
 }
 
 void CodeWriter::Close() {
   // TODO
+
+  // TODO write infinte loop to finish program.
 }
 
 std::string_view CodeWriter::SegmentNameToAssemblySymbol(std::string_view segment_name) {
@@ -234,6 +226,38 @@ std::string CodeWriter::GenSym() {
   std::ostringstream symbol;
   symbol << "G" << i;
   return symbol.str();
+}
+
+void CodeWriter::WriteSetAToLocation(std::string_view segment, int offset) {
+  if (segment == "this" || segment == "that" || segment == "argument"
+             || segment == "local") {
+    output_ << "@" << SegmentNameToAssemblySymbol(segment) << std::endl;
+    if (offset == 0) {
+      output_ << "A=M" << std::endl;
+    } else {
+      output_ << "D=M" << std::endl
+              << "@" << offset << std::endl
+              << "A=D+A" << std::endl;
+    }
+  } else if (segment == "pointer") {
+    if (offset < 0 || offset > 1) {
+      // TODO: Better error handling.
+      std::cerr << "Invalid pointer offset: " << offset << std::endl;
+      exit(1);
+    }
+    std::string_view symbol = kPointerSymbolByOffset[offset];
+    output_ << "@" << symbol << std::endl;
+  } else if (segment == "temp") {
+    if (offset < 0 || offset > 7) {
+      // TODO: better error handling.
+      std::cerr << "Invalid temp offset: " << offset << std::endl;
+      exit(1);
+    }
+    int memory_location = 5 + offset;
+    output_ << "@" << memory_location << std::endl;
+  } else if (segment == "static") {
+    output_ << "@" << static_name_ << "." << offset << std::endl;
+  }
 }
 
 }  // namespace translator

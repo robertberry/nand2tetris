@@ -369,5 +369,87 @@ M=M-1
 )asm");
 }
 
+TEST(CodeWriterTest, PopThis) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WritePop("this", 16);
+
+  EXPECT_EQ(output.str(), R"asm(// Pop to this[16]
+@SP
+A=M
+D=M
+@SP
+M=M-1
+@THIS
+D=M
+@16
+A=D+A
+M=D
+
+)asm");
+}
+
+TEST(CodeWriterTest, PopThat) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WritePop("that", 0);
+
+  EXPECT_EQ(output.str(), R"asm(// Pop to that[0]
+@SP
+A=M
+D=M
+@SP
+M=M-1
+@THAT
+A=M
+M=D
+
+)asm");
+}
+
+TEST(CodeWriterTest, PopArgument) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WritePop("argument", 1);
+
+  EXPECT_EQ(output.str(), R"asm(// Pop to argument[1]
+@SP
+A=M
+D=M
+@SP
+M=M-1
+@ARG
+D=M
+@1
+A=D+A
+M=D
+
+)asm");
+}
+
+TEST(CodeWriterTest, PopLocal) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WritePop("local", 2);
+
+  EXPECT_EQ(output.str(), R"asm(// Pop to local[2]
+@SP
+A=M
+D=M
+@SP
+M=M-1
+@LCL
+D=M
+@2
+A=D+A
+M=D
+
+)asm");
+}
+
 }  // namespace
 }  // namespace translator
