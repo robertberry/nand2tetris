@@ -89,7 +89,19 @@ void CodeWriter::WriteArithmetic(std::string_view command) {
               << "M=" << op.op << "M" << std::endl
               << std::endl;
     } else if (op.arity == Arity::kBinary) {
-      WriteOpOnTopTwoElements(op.op);
+      output_ << R"asm(@SP
+A=M-1
+D=M
+@SP
+A=M
+D=D)asm" << op << R"asm(M
+@SP
+M=M-1
+@SP
+A=M
+M=D
+
+)asm";
     }
   }
 
@@ -167,22 +179,6 @@ std::string_view CodeWriter::SegmentNameToAssemblySymbol(std::string_view segmen
   }
   // TODO: Better error handling.
   exit(1);
-}
-
-void CodeWriter::WriteOpOnTopTwoElements(std::string_view op) {
-  output_ << R"asm(@SP
-A=M-1
-D=M
-@SP
-A=M
-D=D)asm" << op << R"asm(M
-@SP
-M=M-1
-@SP
-A=M
-M=D
-
-)asm";
 }
 
 }  // namespace translator
