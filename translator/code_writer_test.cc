@@ -204,16 +204,12 @@ TEST(CodeWriterTest, Add) {
 
   EXPECT_EQ(output.str(), R"asm(// Add the top two elements of the stack.
 @SP
-A=M-1
-D=M
-@SP
 A=M
-D=D+M
+D=M
+A=A-1
+M=M+D
 @SP
 M=M-1
-@SP
-A=M
-M=D
 
 )asm");
 }
@@ -226,16 +222,12 @@ TEST(CodeWriterTest, Sub) {
 
   EXPECT_EQ(output.str(), R"asm(// Subtract the top element from the second to top element of the stack.
 @SP
-A=M-1
-D=M
-@SP
 A=M
-D=D-M
+D=M
+A=A-1
+M=M-D
 @SP
 M=M-1
-@SP
-A=M
-M=D
 
 )asm");
 }
@@ -248,16 +240,12 @@ TEST(CodeWriterTest, And) {
 
   EXPECT_EQ(output.str(), R"asm(// Performs bit-wise and on the top two elements of the stack.
 @SP
-A=M-1
-D=M
-@SP
 A=M
-D=D&M
+D=M
+A=A-1
+M=M&D
 @SP
 M=M-1
-@SP
-A=M
-M=D
 
 )asm");
 }
@@ -270,16 +258,12 @@ TEST(CodeWriterTest, Or) {
 
   EXPECT_EQ(output.str(), R"asm(// Performs bit-wise or on the top two elements of the stack.
 @SP
-A=M-1
-D=M
-@SP
 A=M
-D=D|M
+D=M
+A=A-1
+M=M|D
 @SP
 M=M-1
-@SP
-A=M
-M=D
 
 )asm");
 }

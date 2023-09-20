@@ -90,16 +90,12 @@ void CodeWriter::WriteArithmetic(std::string_view command) {
               << std::endl;
     } else if (op.arity == Arity::kBinary) {
       output_ << R"asm(@SP
-A=M-1
-D=M
-@SP
 A=M
-D=D)asm" << op.op << R"asm(M
+D=M
+A=A-1
+M=M)asm" << op.op << R"asm(D
 @SP
 M=M-1
-@SP
-A=M
-M=D
 
 )asm";
     }
