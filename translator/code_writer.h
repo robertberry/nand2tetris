@@ -2,6 +2,7 @@
 #define TRANSLATOR_CODE_WRITER_H_
 
 #include <iostream>
+#include <string>
 #include <string_view>
 
 namespace translator {
@@ -10,7 +11,8 @@ namespace translator {
 class CodeWriter final {
  public:
   // Returns a new CodeWriter, writing its output to the provided stream.
-  explicit CodeWriter(std::ostream& output) : output_(output) {}
+  CodeWriter(std::string_view static_name, std::ostream& output)
+      : static_name_(static_name), output_(output) {}
 
   // Writes an arithmetic expression as assembly code.
   void WriteArithmetic(std::string_view command);
@@ -23,10 +25,15 @@ class CodeWriter final {
 
   // Closes the stream, flushes it.
   void Close();
+
  private:
+  std::string static_name_;
+
   std::ostream& output_;
+
+  static std::string_view SegmentNameToAssemblySymbol(std::string_view segment_name);
 };
 
-}
+}  // namespace translator
 
 #endif  // TRANSLATOR_CODE_WRITER_H_
