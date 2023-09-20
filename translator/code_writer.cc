@@ -18,6 +18,18 @@ constexpr std::string_view kPointerSymbolByOffset[] = {
 };
 
 void CodeWriter::WriteArithmetic(std::string_view command) {
+  if (command == "neg") {
+    output_ << R"asm(// Negate the top of the stack.
+@SP
+A=M
+D=M
+D=-D
+@SP
+M=D
+
+)asm";
+  }
+
   // TODO
 }
 

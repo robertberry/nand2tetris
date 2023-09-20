@@ -182,5 +182,22 @@ M=M+1
 )asm");
 }
 
+TEST(CodeWriterTest, Neg) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("neg");
+
+  EXPECT_EQ(output.str(), R"asm(// Negate the top of the stack.
+@SP
+A=M
+D=M
+D=-D
+@SP
+M=D
+
+)asm");
+}
+
 }  // namespace
 }  // namespace translator
