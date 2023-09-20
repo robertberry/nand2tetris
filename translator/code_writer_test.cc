@@ -282,5 +282,92 @@ M=!M
 )asm");
 }
 
+TEST(CodeWriterTest, Gt) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("gt");
+
+  EXPECT_EQ(output.str(), R"asm(// Performs a greater than comparison on the top two elements of the stack.
+@SP
+A=M
+D=M
+A=A-1
+D=M-D
+@G1
+D;JGT
+@SP
+A=A-1
+M=0
+@G2
+0;JMP
+(G1)
+A=A-1
+M=-1
+(G2)
+@SP
+M=M-1
+
+)asm");
+}
+
+TEST(CodeWriterTest, Lt) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("lt");
+
+  EXPECT_EQ(output.str(), R"asm(// Performs a less than comparison on the top two elements of the stack.
+@SP
+A=M
+D=M
+A=A-1
+D=M-D
+@G1
+D;JLT
+@SP
+A=A-1
+M=0
+@G2
+0;JMP
+(G1)
+A=A-1
+M=-1
+(G2)
+@SP
+M=M-1
+
+)asm");
+}
+
+TEST(CodeWriterTest, Eq) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("eq");
+
+  EXPECT_EQ(output.str(), R"asm(// Performs an equality comparison on the top two elements of the stack.
+@SP
+A=M
+D=M
+A=A-1
+D=M-D
+@G1
+D;JEQ
+@SP
+A=A-1
+M=0
+@G2
+0;JMP
+(G1)
+A=A-1
+M=-1
+(G2)
+@SP
+M=M-1
+
+)asm");
+}
+
 }  // namespace
 }  // namespace translator

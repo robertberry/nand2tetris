@@ -31,7 +31,11 @@ class CodeWriter final {
 
   std::ostream& output_;
 
+  int next_symbol_ = 1;
+
   static std::string_view SegmentNameToAssemblySymbol(std::string_view segment_name);
+
+  std::string GenSym();
 };
 
 }  // namespace translator

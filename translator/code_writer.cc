@@ -1,6 +1,7 @@
 #include "translator/code_writer.h"
 
 #include <array>
+#include <sstream>
 #include <string>
 #include <string_view>
 
@@ -76,6 +77,27 @@ constexpr Op kOps[] = {
   }
 };
 
+constexpr Op kComps[] = {
+  {
+    "eq",
+    "JEQ",
+    Arity::kBinary,
+    "Performs an equality comparison on the top two elements of the stack."
+  },
+  {
+    "gt",
+    "JGT",
+    Arity::kBinary,
+    "Performs a greater than comparison on the top two elements of the stack."
+  },
+  {
+    "lt",
+    "JLT",
+    Arity::kBinary,
+    "Performs a less than comparison on the top two elements of the stack."
+  }
+};
+
 void CodeWriter::WriteArithmetic(std::string_view command) {
   for (Op op : kOps) {
     if (op.command != command) {
@@ -99,6 +121,36 @@ M=M-1
 
 )asm";
     }
+  }
+
+  for (Op op : kComps) {
+    if (op.command != command) {
+      continue;
+    }
+    output_ << "// " << op.comment << std::endl;
+
+    std::string symbol1 = GenSym();
+    std::string symbol2 = GenSym();
+    output_ << R"asm(@SP
+A=M
+D=M
+A=A-1
+D=M-D
+@)asm" << symbol1 << R"asm(
+D;)asm" << op.op << R"asm(
+@SP
+A=A-1
+M=0
+@)asm" << symbol2 << R"asm(
+0;JMP
+()asm" << symbol1 << R"asm()
+A=A-1
+M=-1
+()asm" << symbol2 << R"asm()
+@SP
+M=M-1
+
+)asm";
   }
 
   // Error handling if op not found?
@@ -175,6 +227,13 @@ std::string_view CodeWriter::SegmentNameToAssemblySymbol(std::string_view segmen
   }
   // TODO: Better error handling.
   exit(1);
+}
+
+std::string CodeWriter::GenSym() {
+  int i = next_symbol_++;
+  std::ostringstream symbol;
+  symbol << "G" << i;
+  return symbol.str();
 }
 
 }  // namespace translator
