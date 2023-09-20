@@ -94,7 +94,7 @@ A=M-1
 D=M
 @SP
 A=M
-D=D)asm" << op << R"asm(M
+D=D)asm" << op.op << R"asm(M
 @SP
 M=M-1
 @SP
