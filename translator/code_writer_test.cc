@@ -191,10 +191,109 @@ TEST(CodeWriterTest, Neg) {
   EXPECT_EQ(output.str(), R"asm(// Negate the top of the stack.
 @SP
 A=M
-D=M
-D=-D
+M=-M
+
+)asm");
+}
+
+TEST(CodeWriterTest, Add) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("add");
+
+  EXPECT_EQ(output.str(), R"asm(// Add the top two elements of the stack.
 @SP
+A=M-1
+D=M
+@SP
+A=M
+D=D+M
+@SP
+M=M-1
+@SP
+A=M
 M=D
+
+)asm");
+}
+
+TEST(CodeWriterTest, Sub) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("sub");
+
+  EXPECT_EQ(output.str(), R"asm(// Subtract the top element from the second to top element of the stack.
+@SP
+A=M-1
+D=M
+@SP
+A=M
+D=D-M
+@SP
+M=M-1
+@SP
+A=M
+M=D
+
+)asm");
+}
+
+TEST(CodeWriterTest, And) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("and");
+
+  EXPECT_EQ(output.str(), R"asm(// Performs bit-wise and on the top two elements of the stack.
+@SP
+A=M-1
+D=M
+@SP
+A=M
+D=D&M
+@SP
+M=M-1
+@SP
+A=M
+M=D
+
+)asm");
+}
+
+TEST(CodeWriterTest, Or) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("or");
+
+  EXPECT_EQ(output.str(), R"asm(// Performs bit-wise or on the top two elements of the stack.
+@SP
+A=M-1
+D=M
+@SP
+A=M
+D=D|M
+@SP
+M=M-1
+@SP
+A=M
+M=D
+
+)asm");
+}
+
+TEST(CodeWriterTest, Not) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.WriteArithmetic("not");
+
+  EXPECT_EQ(output.str(), R"asm(// Performs bit-wise not on the top element of the stack.
+@SP
+A=M
+M=!M
 
 )asm");
 }

@@ -32,6 +32,8 @@ class CodeWriter final {
   std::ostream& output_;
 
   static std::string_view SegmentNameToAssemblySymbol(std::string_view segment_name);
+
+  void WriteOpOnTopTwoElements(std::string_view op);
 };
 
 }  // namespace translator
