@@ -35,5 +35,9 @@ cc_test(
 
 cc_binary(
   name = "translator",
-  srcs = ["translator.cc"]
+  srcs = ["translator.cc"],
+  deps = [
+    ":code_writer",
+    ":parser"
+  ]
 )

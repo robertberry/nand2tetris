@@ -1,4 +1,17 @@
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <string_view>
+
+#include "translator/code_writer.h"
+#include "translator/parser.h"
+
+using ::translator::CodeWriter;
+using ::translator::CommandType;
+using ::translator::Instruction;
+using ::translator::Parser;
+
+constexpr std::string_view kHackAssemblyExtension = "asm";
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
@@ -6,5 +19,49 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  std::cout << "TODO" << std::endl;
+  std::filesystem::path absolute_path = std::filesystem::absolute(argv[1]);
+  std::ifstream input_stream(absolute_path.string());
+  if (!input_stream.is_open()) {
+    std::cerr << "Could not open '" << absolute_path << "'" << std::endl;
+    return 2;
+  }
+  Parser parser(input_stream);
+
+  absolute_path.replace_extension(kHackAssemblyExtension);
+  std::ofstream output_stream(absolute_path.string());
+  if (!output_stream.is_open()) {
+    std::cerr << "Could not open '" << absolute_path << "' for writing" 
+              << std::endl;
+    return 2;
+  }
+  std::string static_name = absolute_path.stem();
+  CodeWriter code_writer(static_name, output_stream);
+
+  while (parser.HasMoreLines()) {
+    parser.Advance();
+    Instruction instruction = parser.CurrentInstruction();
+    CommandType command_type = instruction.command_type;
+
+    switch (command_type) {
+      case CommandType::kCArithmetic:
+        code_writer.WriteArithmetic(instruction.arg1);
+        break;
+
+      case CommandType::kCPush:
+        code_writer.WritePush(instruction.arg1, instruction.arg2);
+        break;
+
+      case CommandType::kCPop:
+        code_writer.WritePop(instruction.arg1, instruction.arg2);
+        break;
+
+      default:
+        std::cerr << "Unexpected instruction type" << std::endl;
+        return 3;
+    }
+  }
+
+  code_writer.Close();
+
+  return 0;
 }
