@@ -189,18 +189,21 @@ void CodeWriter::WritePop(std::string_view segment, int offset) {
 
   // Add comment explaining what is happening at a high level.
   output_ << "// Pop to " << segment << "[" << offset << "]" << std::endl;
-  
-  // Pop data from top of stack onto D.
-  output_ << R"asm(@SP
-M=M-1
+
+  WriteSetAToLocation(segment, offset);
+  output_ << R"asm(D=A
+@SP
 A=M
+M=D
+A=A-1
 D=M
+A=A+1
+A=M
+M=D
+@SP
+M=M-1
 
 )asm";
-
-  // Navigate to desired memory location and write value.
-  WriteSetAToLocation(segment, offset);
-  output_ << "M=D" << std::endl << std::endl;
 }
 
 void CodeWriter::Close() {
