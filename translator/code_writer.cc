@@ -107,17 +107,16 @@ void CodeWriter::WriteArithmetic(std::string_view command) {
     output_ << "// " << op.comment << std::endl;
     if (op.arity == Arity::kUnary) {
       output_ << "@SP" << std::endl
-              << "A=M" << std::endl
+              << "A=M-1" << std::endl
               << "M=" << op.op << "M" << std::endl
               << std::endl;
     } else if (op.arity == Arity::kBinary) {
       output_ << R"asm(@SP
+M=M-1
 A=M
 D=M
 A=A-1
 M=M)asm" << op.op << R"asm(D
-@SP
-M=M-1
 
 )asm";
     }
@@ -132,6 +131,7 @@ M=M-1
     std::string symbol1 = GenSym();
     std::string symbol2 = GenSym();
     output_ << R"asm(@SP
+M=M-1
 A=M
 D=M
 A=A-1
@@ -147,8 +147,6 @@ M=0
 A=A-1
 M=-1
 ()asm" << symbol2 << R"asm()
-@SP
-M=M-1
 
 )asm";
   }
@@ -193,10 +191,10 @@ void CodeWriter::WritePop(std::string_view segment, int offset) {
   
   // Pop data from top of stack onto D.
   output_ << R"asm(@SP
+M=M-1
 A=M
 D=M
-@SP
-M=M-1
+
 )asm";
 
   // Navigate to desired memory location and write value.
