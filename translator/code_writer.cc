@@ -205,9 +205,10 @@ M=M-1
 }
 
 void CodeWriter::Close() {
-  // TODO
-
-  // TODO write infinte loop to finish program.
+  output_ << "// Infinitely loop to end program." << std::endl
+          << "(EOP)" << std::endl
+          << "@EOP" << std::endl
+          << "0; JMP" << std::endl;
 }
 
 std::string_view CodeWriter::SegmentNameToAssemblySymbol(std::string_view segment_name) {

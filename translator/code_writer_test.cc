@@ -451,5 +451,18 @@ M=D
 )asm");
 }
 
+TEST(CodeWriterTest, CloseWritesInfiniteLoop) {
+  std::ostringstream output;
+  CodeWriter code_writer(kStaticName, output);
+
+  code_writer.Close();
+
+  EXPECT_EQ(output.str(), R"asm(// Infinitely loop to end program.
+(EOP)
+@EOP
+0; JMP
+)asm");
+}
+
 }  // namespace
 }  // namespace translator
