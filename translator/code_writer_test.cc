@@ -190,7 +190,7 @@ TEST(CodeWriterTest, Neg) {
 
   EXPECT_EQ(output.str(), R"asm(// Negate the top of the stack.
 @SP
-A=M
+A=M-1
 M=-M
 
 )asm");
@@ -204,12 +204,11 @@ TEST(CodeWriterTest, Add) {
 
   EXPECT_EQ(output.str(), R"asm(// Add the top two elements of the stack.
 @SP
+M=M-1
 A=M
 D=M
 A=A-1
 M=M+D
-@SP
-M=M-1
 
 )asm");
 }
@@ -222,12 +221,11 @@ TEST(CodeWriterTest, Sub) {
 
   EXPECT_EQ(output.str(), R"asm(// Subtract the top element from the second to top element of the stack.
 @SP
+M=M-1
 A=M
 D=M
 A=A-1
 M=M-D
-@SP
-M=M-1
 
 )asm");
 }
@@ -240,12 +238,11 @@ TEST(CodeWriterTest, And) {
 
   EXPECT_EQ(output.str(), R"asm(// Performs bit-wise and on the top two elements of the stack.
 @SP
+M=M-1
 A=M
 D=M
 A=A-1
 M=M&D
-@SP
-M=M-1
 
 )asm");
 }
@@ -258,12 +255,11 @@ TEST(CodeWriterTest, Or) {
 
   EXPECT_EQ(output.str(), R"asm(// Performs bit-wise or on the top two elements of the stack.
 @SP
+M=M-1
 A=M
 D=M
 A=A-1
 M=M|D
-@SP
-M=M-1
 
 )asm");
 }
@@ -276,7 +272,7 @@ TEST(CodeWriterTest, Not) {
 
   EXPECT_EQ(output.str(), R"asm(// Performs bit-wise not on the top element of the stack.
 @SP
-A=M
+A=M-1
 M=!M
 
 )asm");
@@ -290,6 +286,7 @@ TEST(CodeWriterTest, Gt) {
 
   EXPECT_EQ(output.str(), R"asm(// Performs a greater than comparison on the top two elements of the stack.
 @SP
+M=M-1
 A=M
 D=M
 A=A-1
@@ -297,16 +294,15 @@ D=M-D
 @G1
 D;JGT
 @SP
-A=A-1
+A=M-1
 M=0
 @G2
 0;JMP
 (G1)
-A=A-1
+@SP
+A=M-1
 M=-1
 (G2)
-@SP
-M=M-1
 
 )asm");
 }
@@ -319,6 +315,7 @@ TEST(CodeWriterTest, Lt) {
 
   EXPECT_EQ(output.str(), R"asm(// Performs a less than comparison on the top two elements of the stack.
 @SP
+M=M-1
 A=M
 D=M
 A=A-1
@@ -326,16 +323,15 @@ D=M-D
 @G1
 D;JLT
 @SP
-A=A-1
+A=M-1
 M=0
 @G2
 0;JMP
 (G1)
-A=A-1
+@SP
+A=M-1
 M=-1
 (G2)
-@SP
-M=M-1
 
 )asm");
 }
@@ -348,6 +344,7 @@ TEST(CodeWriterTest, Eq) {
 
   EXPECT_EQ(output.str(), R"asm(// Performs an equality comparison on the top two elements of the stack.
 @SP
+M=M-1
 A=M
 D=M
 A=A-1
@@ -355,16 +352,15 @@ D=M-D
 @G1
 D;JEQ
 @SP
-A=A-1
+A=M-1
 M=0
 @G2
 0;JMP
 (G1)
-A=A-1
+@SP
+A=M-1
 M=-1
 (G2)
-@SP
-M=M-1
 
 )asm");
 }
@@ -376,16 +372,21 @@ TEST(CodeWriterTest, PopThis) {
   code_writer.WritePop("this", 16);
 
   EXPECT_EQ(output.str(), R"asm(// Pop to this[16]
-@SP
-A=M
-D=M
-@SP
-M=M-1
 @THIS
 D=M
 @16
 A=D+A
+D=A
+@SP
+A=M
 M=D
+A=A-1
+D=M
+A=A+1
+A=M
+M=D
+@SP
+M=M-1
 
 )asm");
 }
@@ -397,14 +398,19 @@ TEST(CodeWriterTest, PopThat) {
   code_writer.WritePop("that", 0);
 
   EXPECT_EQ(output.str(), R"asm(// Pop to that[0]
-@SP
-A=M
-D=M
-@SP
-M=M-1
 @THAT
 A=M
+D=A
+@SP
+A=M
 M=D
+A=A-1
+D=M
+A=A+1
+A=M
+M=D
+@SP
+M=M-1
 
 )asm");
 }
@@ -416,16 +422,21 @@ TEST(CodeWriterTest, PopArgument) {
   code_writer.WritePop("argument", 1);
 
   EXPECT_EQ(output.str(), R"asm(// Pop to argument[1]
-@SP
-A=M
-D=M
-@SP
-M=M-1
 @ARG
 D=M
 @1
 A=D+A
+D=A
+@SP
+A=M
 M=D
+A=A-1
+D=M
+A=A+1
+A=M
+M=D
+@SP
+M=M-1
 
 )asm");
 }
@@ -437,16 +448,21 @@ TEST(CodeWriterTest, PopLocal) {
   code_writer.WritePop("local", 2);
 
   EXPECT_EQ(output.str(), R"asm(// Pop to local[2]
-@SP
-A=M
-D=M
-@SP
-M=M-1
 @LCL
 D=M
 @2
 A=D+A
+D=A
+@SP
+A=M
 M=D
+A=A-1
+D=M
+A=A+1
+A=M
+M=D
+@SP
+M=M-1
 
 )asm");
 }
