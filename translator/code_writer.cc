@@ -139,12 +139,13 @@ D=M-D
 @)asm" << symbol1 << R"asm(
 D;)asm" << op.op << R"asm(
 @SP
-A=A-1
+A=M-1
 M=0
 @)asm" << symbol2 << R"asm(
 0;JMP
 ()asm" << symbol1 << R"asm()
-A=A-1
+@SP
+A=M-1
 M=-1
 ()asm" << symbol2 << R"asm()
 
