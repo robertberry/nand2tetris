@@ -107,5 +107,59 @@ TEST(ParserTest, Arg2PopIsOffset) {
   EXPECT_EQ(instruction.arg2, 32);
 }
 
+TEST(ParserTest, Call) {
+  std::istringstream input("call sqrt");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.command_type, CommandType::kCCall);
+  EXPECT_EQ(instruction.arg1, "sqrt");
+}
+
+TEST(ParserTest, Label) {
+  std::istringstream input("label WHILE_LOOP");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.command_type, CommandType::kCLabel);
+  EXPECT_EQ(instruction.arg1, "WHILE_LOOP");
+}
+
+TEST(ParserTest, Goto) {
+  std::istringstream input("goto LOOP");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.command_type, CommandType::kCGoto);
+  EXPECT_EQ(instruction.arg1, "LOOP");
+}
+
+TEST(ParserTest, If) {
+  std::istringstream input("if-goto WHILE_END");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.command_type, CommandType::kCIf);
+  EXPECT_EQ(instruction.arg1, "WHILE_END");
+}
+
+TEST(ParserTest, Return) {
+  std::istringstream input("return");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.command_type, CommandType::kCReturn);
+}
+
 }  // namespace
 }  // namespace translator

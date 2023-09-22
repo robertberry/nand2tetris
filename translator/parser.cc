@@ -27,8 +27,11 @@ constexpr std::pair<std::string_view, CommandType> kCommandTable[] = {
   {"push", CommandType::kCPush},
   {"pop", CommandType::kCPop},
   {"goto", CommandType::kCGoto},
-  {"if", CommandType::kCIf},
-  {"return", CommandType::kCReturn}
+  {"if-goto", CommandType::kCIf},
+  {"return", CommandType::kCReturn},
+  {"label", CommandType::kCLabel},
+  {"function", CommandType::kCFunction},
+  {"call", CommandType::kCCall},
 };
 
 constexpr std::string_view kMemorySegments[] = {
@@ -69,6 +72,25 @@ void Parser::Advance() {
       }
       current_instruction_.arg1 = std::move(memory_segment);
       current_instruction_.arg2 = ExpectNumber("Expected memory offset");
+      break;
+    }
+
+    case CommandType::kCReturn: {
+      // No args.
+      break;
+    };
+
+    case CommandType::kCCall:
+    case CommandType::kCLabel:
+    case CommandType::kCIf:
+    case CommandType::kCGoto: {
+      current_instruction_.arg1 = ExpectWord("Expected label");
+      break;
+    }
+
+    case CommandType::kCFunction: {
+      // TODO: Add parsing for arguments.
+      ReportError("Unsupported function");
       break;
     }
 

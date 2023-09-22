@@ -18,7 +18,7 @@ enum class CommandType {
   kCIf,
   kCFunction,
   kCReturn,
-  kCCall
+  kCCall,
 };
 
 // A VM p-code instruction.
