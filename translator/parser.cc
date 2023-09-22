@@ -89,8 +89,7 @@ void Parser::Advance() {
     }
 
     case CommandType::kCFunction: {
-      // TODO: Add parsing for arguments.
-      ReportError("Unsupported function");
+      current_instruction_.arg1 = ExpectWord("Expected function name");
       break;
     }
 

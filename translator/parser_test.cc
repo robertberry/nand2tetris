@@ -161,5 +161,16 @@ TEST(ParserTest, Return) {
   EXPECT_EQ(instruction.command_type, CommandType::kCReturn);
 }
 
+TEST(ParserTest, Function) {
+  std::istringstream input("function hypot(x,y)");
+  Parser p(input);
+
+  p.Advance();
+
+  Instruction instruction = p.CurrentInstruction();
+  EXPECT_EQ(instruction.command_type, CommandType::kCFunction);
+  EXPECT_EQ(instruction.arg1, "hypot(x,y)");
+}
+
 }  // namespace
 }  // namespace translator
