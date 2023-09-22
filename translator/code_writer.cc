@@ -206,6 +206,34 @@ M=M-1
 )asm";
 }
 
+void CodeWriter::WriteLabel(std::string_view label) {
+  // TODO
+}
+
+void CodeWriter::WriteGoto(std::string_view label) {
+  // TODO
+}
+
+void CodeWriter::WriteIf(std::string_view label) {
+  // TODO
+}
+
+void CodeWriter::WriteFunction(std::string_view function_name, int n_vars) {
+  // TODO
+}
+
+void CodeWriter::WriteCall(std::string_view function_name, int n_args) {
+  // TODO
+}
+
+void CodeWriter::WriteReturn() {
+  // TODO
+}
+
+void CodeWriter::SetFileName(std::string_view file_name) {
+  // TODO
+}
+
 void CodeWriter::Close() {
   output_ << "// Infinitely loop to end program." << std::endl
           << "(EOP)" << std::endl
