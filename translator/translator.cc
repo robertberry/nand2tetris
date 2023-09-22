@@ -34,8 +34,8 @@ int main(int argc, char* argv[]) {
               << std::endl;
     return 2;
   }
-  std::string static_name = absolute_path.stem();
-  CodeWriter code_writer(static_name, output_stream);
+  CodeWriter code_writer(output_stream);
+  code_writer.SetFileName(absolute_path.filename().string());
 
   while (parser.HasMoreLines()) {
     parser.Advance();

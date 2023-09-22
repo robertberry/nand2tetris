@@ -11,8 +11,7 @@ namespace translator {
 class CodeWriter final {
  public:
   // Returns a new CodeWriter, writing its output to the provided stream.
-  CodeWriter(std::string_view static_name, std::ostream& output)
-      : static_name_(static_name), output_(output) {}
+  explicit CodeWriter(std::ostream& output) : output_(output) {}
 
   // Writes an arithmetic expression as assembly code.
   void WriteArithmetic(std::string_view command);
@@ -51,13 +50,15 @@ class CodeWriter final {
   void Close();
 
  private:
-  std::string static_name_;
+  std::string static_name_ = "_NO_FILE_NAME_SET";
 
   std::ostream& output_;
 
   int next_symbol_ = 1;
 
   static std::string_view SegmentNameToAssemblySymbol(std::string_view segment_name);
+
+  static std::string StaticNameFromFileName(std::string_view file_name);
 
   std::string GenSym();
 

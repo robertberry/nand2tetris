@@ -6,11 +6,9 @@
 namespace translator {
 namespace {
 
-constexpr std::string_view kStaticName = "Foo";
-
 TEST(CodeWriterTest, PushConstant) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePush("constant", 42);
 
@@ -28,7 +26,7 @@ M=M+1
 
 TEST(CodeWriterTest, PushThis) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePush("this", 16);
 
@@ -49,7 +47,7 @@ M=M+1
 
 TEST(CodeWriterTest, PushThat) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePush("that", 32);
 
@@ -70,7 +68,7 @@ M=M+1
 
 TEST(CodeWriterTest, PushArgument) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePush("argument", 0);
 
@@ -89,7 +87,7 @@ M=M+1
 
 TEST(CodeWriterTest, PushLocal) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePush("local", 2);
 
@@ -110,7 +108,7 @@ M=M+1
 
 TEST(CodeWriterTest, PushPointerThis) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   // pointer[0] is this.
   code_writer.WritePush("pointer", 0);
@@ -129,7 +127,7 @@ M=M+1
 
 TEST(CodeWriterTest, PushPointerThat) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   // pointer[1] is that.
   code_writer.WritePush("pointer", 1);
@@ -148,7 +146,7 @@ M=M+1
 
 TEST(CodeWriterTest, PushTemp) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePush("temp", 1);
 
@@ -166,7 +164,8 @@ M=M+1
 
 TEST(CodeWriterTest, PushStatic) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
+  code_writer.SetFileName("Foo.vm");
 
   code_writer.WritePush("static", 1);
 
@@ -184,7 +183,7 @@ M=M+1
 
 TEST(CodeWriterTest, Neg) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("neg");
 
@@ -198,7 +197,7 @@ M=-M
 
 TEST(CodeWriterTest, Add) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("add");
 
@@ -215,7 +214,7 @@ M=M+D
 
 TEST(CodeWriterTest, Sub) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("sub");
 
@@ -232,7 +231,7 @@ M=M-D
 
 TEST(CodeWriterTest, And) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("and");
 
@@ -249,7 +248,7 @@ M=M&D
 
 TEST(CodeWriterTest, Or) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("or");
 
@@ -266,7 +265,7 @@ M=M|D
 
 TEST(CodeWriterTest, Not) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("not");
 
@@ -280,7 +279,7 @@ M=!M
 
 TEST(CodeWriterTest, Gt) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("gt");
 
@@ -309,7 +308,7 @@ M=-1
 
 TEST(CodeWriterTest, Lt) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("lt");
 
@@ -338,7 +337,7 @@ M=-1
 
 TEST(CodeWriterTest, Eq) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WriteArithmetic("eq");
 
@@ -367,7 +366,7 @@ M=-1
 
 TEST(CodeWriterTest, PopThis) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePop("this", 16);
 
@@ -393,7 +392,7 @@ M=M-1
 
 TEST(CodeWriterTest, PopThat) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePop("that", 0);
 
@@ -417,7 +416,7 @@ M=M-1
 
 TEST(CodeWriterTest, PopArgument) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePop("argument", 1);
 
@@ -443,7 +442,7 @@ M=M-1
 
 TEST(CodeWriterTest, PopLocal) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.WritePop("local", 2);
 
@@ -469,7 +468,7 @@ M=M-1
 
 TEST(CodeWriterTest, CloseWritesInfiniteLoop) {
   std::ostringstream output;
-  CodeWriter code_writer(kStaticName, output);
+  CodeWriter code_writer(output);
 
   code_writer.Close();
 

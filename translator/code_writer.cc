@@ -231,7 +231,7 @@ void CodeWriter::WriteReturn() {
 }
 
 void CodeWriter::SetFileName(std::string_view file_name) {
-  // TODO
+  static_name_ = StaticNameFromFileName(file_name);
 }
 
 void CodeWriter::Close() {
@@ -289,6 +289,15 @@ void CodeWriter::WriteSetAToLocation(std::string_view segment, int offset) {
   } else if (segment == "static") {
     output_ << "@" << static_name_ << "." << offset << std::endl;
   }
+}
+
+std::string CodeWriter::StaticNameFromFileName(std::string_view file_name) {
+  size_t pos = file_name.rfind(".vm");
+  if (pos == std::string::npos) {
+    // TODO: Better error handling.
+    return "BAD_FILE_NAME";
+  }
+  return std::string(file_name.substr(0, pos));
 }
 
 }  // namespace translator
