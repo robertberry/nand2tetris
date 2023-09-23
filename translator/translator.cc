@@ -55,6 +55,18 @@ int main(int argc, char* argv[]) {
         code_writer.WritePop(instruction.arg1, instruction.arg2);
         break;
 
+      case CommandType::kCLabel:
+        code_writer.WriteLabel(instruction.arg1);
+        break;
+
+      case CommandType::kCGoto:
+        code_writer.WriteGoto(instruction.arg1);
+        break;
+
+      case CommandType::kCIf:
+        code_writer.WriteIf(instruction.arg1);
+        break;
+
       default:
         std::cerr << "Unexpected instruction type" << std::endl;
         return 3;

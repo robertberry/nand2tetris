@@ -128,11 +128,15 @@ int Parser::ExpectNumber(std::string_view error_message) {
 
 void Parser::ExpectEndOfLine(std::string_view error_message) {
   int ch;
+  bool inside_comment = false;
   while ((ch = input_.get()) != EOF) {
     if (ch == '\n') {
       return;
     }
-    if (!isspace(ch)) {
+    if (!inside_comment && ch == '/' && input_.peek() == '/') {
+      inside_comment = true;
+    }
+    if (!inside_comment && !isspace(ch)) {
       ReportError(error_message);
     }
   }
