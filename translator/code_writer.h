@@ -11,7 +11,7 @@ namespace translator {
 class CodeWriter final {
  public:
   // Returns a new CodeWriter, writing its output to the provided stream.
-  explicit CodeWriter(std::ostream& output) : output_(output) {}
+  explicit CodeWriter(std::ostream& output);
 
   // Writes an arithmetic expression as assembly code.
   void WriteArithmetic(std::string_view command);
@@ -51,6 +51,8 @@ class CodeWriter final {
 
  private:
   std::string file_scope_ = "_NO_FILE_NAME_SET";
+
+  std::string function_scope_;
 
   std::ostream& output_;
 

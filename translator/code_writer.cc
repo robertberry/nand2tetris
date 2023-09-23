@@ -26,6 +26,8 @@ struct Op {
 
 }  // namespace
 
+constexpr std::string_view kFunctionScopeNone = "_NONE";
+
 constexpr std::string_view kSegmentNameSymbolTable[] = {
   "this", "THIS",
   "that", "THAT",
@@ -97,6 +99,9 @@ constexpr Op kComps[] = {
     "Performs a less than comparison on the top two elements of the stack."
   }
 };
+
+CodeWriter::CodeWriter(std::ostream& output) :
+    function_scope_(kFunctionScopeNone), output_(output) {}
 
 void CodeWriter::WriteArithmetic(std::string_view command) {
   for (Op op : kOps) {
@@ -227,6 +232,7 @@ void CodeWriter::WriteIf(std::string_view label) {
 }
 
 void CodeWriter::WriteFunction(std::string_view function_name, int n_vars) {
+  function_scope_ = function_name;
   // TODO
 }
 
@@ -235,6 +241,7 @@ void CodeWriter::WriteCall(std::string_view function_name, int n_args) {
 }
 
 void CodeWriter::WriteReturn() {
+  function_scope_ = kFunctionScopeNone;
   // TODO
 }
 
