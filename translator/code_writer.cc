@@ -234,11 +234,32 @@ void CodeWriter::WriteIf(std::string_view label) {
 
 void CodeWriter::WriteFunction(std::string_view function_name, int n_vars) {
   function_scope_ = function_name;
+  next_return_code_ = 0;
   // TODO
 }
 
 void CodeWriter::WriteCall(std::string_view function_name, int n_args) {
-  // TODO
+  std::string return_label = GenerateReturnLabel();
+  std::string_view push_a = R"asm(D=A
+@SP
+M=M+1
+A=M-1
+M=D
+)asm";
+  output_ << "// Call " << function_name << std::endl
+          << "@" << return_label << std::endl
+          << push_a << std::endl
+          << "@LCL" << std::endl
+          << push_a << std::endl
+          << "@ARG" << std::endl
+          << push_a << std::endl
+          << "@THIS" << std::endl
+          << push_a << std::endl
+          << "@THAT" << std::endl
+          << push_a << std::endl
+          << "@" << FullyQualifiedFunctionName(function_name) << std::endl
+          << "0;JMP" << std::endl
+          << "(" << return_label << ")" << std::endl << std::endl;
 }
 
 void CodeWriter::WriteReturn() {
@@ -320,6 +341,19 @@ std::string CodeWriter::FullyQualifiedLabelName(std::string_view label) {
   std::ostringstream fq_label;
   fq_label << file_scope_ << "." << function_scope_ << "$" << label;
   return fq_label.str();
+}
+
+std::string CodeWriter::GenerateReturnLabel() {
+  int code = next_return_code_++;
+  std::ostringstream label;
+  label << file_scope_ << "." << function_scope_ << "$ret" << code;
+  return label.str();
+}
+
+std::string CodeWriter::FullyQualifiedFunctionName(std::string_view function_name) {
+  std::ostringstream fq_function_name;
+  fq_function_name << file_scope_ << "." << function_name;
+  return fq_function_name.str();
 }
 
 }  // namespace translator

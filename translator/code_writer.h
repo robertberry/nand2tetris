@@ -56,6 +56,8 @@ class CodeWriter final {
 
   std::ostream& output_;
 
+  int next_return_code_ = 0;
+
   int next_symbol_ = 1;
 
   static std::string_view SegmentNameToAssemblySymbol(std::string_view segment_name);
@@ -67,6 +69,10 @@ class CodeWriter final {
   void WriteSetAToLocation(std::string_view segment, int offset);
 
   std::string FullyQualifiedLabelName(std::string_view label);
+
+  std::string FullyQualifiedFunctionName(std::string_view function_name);
+
+  std::string GenerateReturnLabel();
 };
 
 }  // namespace translator
