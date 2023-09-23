@@ -263,8 +263,35 @@ M=D
 }
 
 void CodeWriter::WriteReturn() {
+  std::string_view save_return_address_to_r15 = R"asm(@LCL
+D=A
+@5
+D=D-A
+@R15
+M=D
+)asm";
+  
+  std::string_view pop_stack_frame_to_d = R"asm(@LCL
+AM=M-1
+D=M
+)asm";
+  
+  output_ << "// Return" << std::endl
+          << save_return_address_to_r15
+          << pop_stack_frame_to_d
+          << "@THAT" << std::endl
+          << "M=D" << std::endl
+          << pop_stack_frame_to_d
+          << "@THIS" << std::endl
+          << "M=D" << std::endl
+          << pop_stack_frame_to_d
+          << "@ARG" << std::endl
+          << pop_stack_frame_to_d
+          << "@LCL" << std::endl
+          << "M=D" << std::endl
+          << "@R15" << std::endl
+          << "0;JMP" << std::endl;
   function_scope_ = kFunctionScopeNone;
-  // TODO
 }
 
 void CodeWriter::SetFileName(std::string_view file_name) {
