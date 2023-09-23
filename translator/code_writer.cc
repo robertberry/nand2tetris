@@ -235,7 +235,19 @@ void CodeWriter::WriteIf(std::string_view label) {
 void CodeWriter::WriteFunction(std::string_view function_name, int n_vars) {
   function_scope_ = function_name;
   next_return_code_ = 0;
-  // TODO
+
+  output_ << "// Function " << function_name << std::endl
+          << "(" << FullyQualifiedFunctionName(function_name) << ")" << std::endl
+          << "@SP" << std::endl
+          << "A=M" << std::endl;
+  for (int i = 0; i < n_vars; i++) {
+    output_ << "M=0" << std::endl
+            << "A=A+1" << std::endl;
+  }
+  output_ << "@" << n_vars << std::endl
+          << "D=A" << std::endl
+          << "@SP" << std::endl
+          << "M=M+D" << std::endl;
 }
 
 void CodeWriter::WriteCall(std::string_view function_name, int n_args) {
@@ -244,6 +256,11 @@ void CodeWriter::WriteCall(std::string_view function_name, int n_args) {
 @SP
 M=M+1
 A=M-1
+M=D
+)asm";
+  std::string_view set_lcl_to_sp = R"asm(@SP
+D=M
+@LCL
 M=D
 )asm";
   output_ << "// Call " << function_name << std::endl
@@ -257,12 +274,26 @@ M=D
           << push_a << std::endl
           << "@THAT" << std::endl
           << push_a << std::endl
+          << "@SP" << std::endl
+          << "D=M" << std::endl
+          << "@" << n_args + 5 << std::endl
+          << "D=D-A" << std::endl
+          << "@ARG" << std::endl
+          << "M=D" << std::endl
+          << set_lcl_to_sp
           << "@" << FullyQualifiedFunctionName(function_name) << std::endl
           << "0;JMP" << std::endl
           << "(" << return_label << ")" << std::endl << std::endl;
 }
 
 void CodeWriter::WriteReturn() {
+  std::string_view pop_stack_to_arg0 = R"asm(@SP
+AM=M-1
+D=M
+@ARG
+M=D
+)asm";
+  
   std::string_view save_return_address_to_r15 = R"asm(@LCL
 D=A
 @5
@@ -270,13 +301,31 @@ D=D-A
 @R15
 M=D
 )asm";
+
+  std::string_view save_arg_to_r16 = R"asm(@ARG
+D=M
+@R16
+M=D
+)asm";
   
   std::string_view pop_stack_frame_to_d = R"asm(@LCL
 AM=M-1
 D=M
 )asm";
-  
+
+  std::string_view jump_to_r15 = R"asm(@R15
+0;JMP
+)asm";
+
+  std::string_view set_sp_to_r16_plus_1 = R"asm(@R16
+D=M
+@SP
+M=D+1
+)asm";
+
   output_ << "// Return" << std::endl
+          << save_arg_to_r16
+          << pop_stack_to_arg0
           << save_return_address_to_r15
           << pop_stack_frame_to_d
           << "@THAT" << std::endl
@@ -289,8 +338,11 @@ D=M
           << pop_stack_frame_to_d
           << "@LCL" << std::endl
           << "M=D" << std::endl
-          << "@R15" << std::endl
-          << "0;JMP" << std::endl;
+          << set_sp_to_r16_plus_1 << std::endl
+          << jump_to_r15 << std::endl;
+
+  // TODO: need to reset SP, as it has all the locals, etc.
+  
   function_scope_ = kFunctionScopeNone;
 }
 
