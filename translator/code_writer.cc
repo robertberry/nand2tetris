@@ -212,23 +212,24 @@ M=M-1
 }
 
 void CodeWriter::WriteLabel(std::string_view label) {
-  // TODO
+  output_ << "// VM label " << label << std::endl
+          << "(" << FullyQualifiedLabelName(label) << ")" << std::endl
+          << std::endl;
 }
 
 void CodeWriter::WriteGoto(std::string_view label) {
-  // TODO
+  output_ << "// Goto VM label " << label << std::endl
+          << "@" << FullyQualifiedLabelName(label) << std::endl
+          << "0;JMP" << std::endl << std::endl;
 }
 
 void CodeWriter::WriteIf(std::string_view label) {
   output_ << "// If top of stack is true, goto " << label << std::endl
           << "@SP" << std::endl
           << "A=M-1" << std::endl
-          << "D=M" << std::endl;
-
-  // TODO: Now need to set A to the label.
-
-  // True is any non-zero value (though typically -1).
-  output_ << "D;JNE" << std::endl << std::endl;
+          << "D=M" << std::endl
+          << "@" << FullyQualifiedLabelName(label) << std::endl
+          << "D;JNE" << std::endl << std::endl;
 }
 
 void CodeWriter::WriteFunction(std::string_view function_name, int n_vars) {
@@ -313,6 +314,12 @@ std::string CodeWriter::ScopeNameFromFileName(std::string_view file_name) {
     return "BAD_FILE_NAME";
   }
   return std::string(file_name.substr(0, pos));
+}
+
+std::string CodeWriter::FullyQualifiedLabelName(std::string_view label) {
+  std::ostringstream fq_label;
+  fq_label << file_scope_ << "." << function_scope_ << "$" << label;
+  return fq_label.str();
 }
 
 }  // namespace translator

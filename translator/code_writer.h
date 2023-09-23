@@ -65,6 +65,8 @@ class CodeWriter final {
   std::string GenSym();
 
   void WriteSetAToLocation(std::string_view segment, int offset);
+
+  std::string FullyQualifiedLabelName(std::string_view label);
 };
 
 }  // namespace translator
