@@ -37,6 +37,8 @@ int main(int argc, char* argv[]) {
   CodeWriter code_writer(output_stream);
   code_writer.SetFileName(absolute_path.filename().string());
 
+  code_writer.WriteBootstrap();
+
   while (parser.HasMoreLines()) {
     parser.Advance();
     Instruction instruction = parser.CurrentInstruction();

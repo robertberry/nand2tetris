@@ -13,6 +13,9 @@ class CodeWriter final {
   // Returns a new CodeWriter, writing its output to the provided stream.
   explicit CodeWriter(std::ostream& output);
 
+  // Writes the VM bootstrapping code. This should be called first.
+  void WriteBootstrap();
+
   // Writes an arithmetic expression as assembly code.
   void WriteArithmetic(std::string_view command);
 

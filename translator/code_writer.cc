@@ -103,6 +103,15 @@ constexpr Op kComps[] = {
 CodeWriter::CodeWriter(std::ostream& output) :
     function_scope_(kFunctionScopeNone), output_(output) {}
 
+void CodeWriter::WriteBootstrap() {
+  output_ << R"asm(@256
+D=A
+@SP
+M=D
+)asm";
+  WriteCall("Sys.init", /*n_args=*/ 0);
+}
+
 void CodeWriter::WriteArithmetic(std::string_view command) {
   for (Op op : kOps) {
     if (op.command != command) {
@@ -430,9 +439,15 @@ std::string CodeWriter::GenerateReturnLabel() {
 }
 
 std::string CodeWriter::FullyQualifiedFunctionName(std::string_view function_name) {
-  std::ostringstream fq_function_name;
-  fq_function_name << file_scope_ << "." << function_name;
-  return fq_function_name.str();
+  return std::string(function_name);
+
+  // It looks like the VM code is expected to fully qualify the name itself, so
+  // this is probably not needed. Once verified, delete this entire function and fix
+  // caller code.
+  
+  // std::ostringstream fq_function_name;
+  // fq_function_name << file_scope_ << "." << function_name;
+  // return fq_function_name.str();
 }
 
 }  // namespace translator
