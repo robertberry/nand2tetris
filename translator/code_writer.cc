@@ -26,7 +26,7 @@ struct Op {
 
 }  // namespace
 
-constexpr std::string_view kFunctionScopeNone = "_NONE";
+constexpr std::string_view kFunctionScopeNone = "noFunction";
 
 constexpr std::string_view kSegmentNameSymbolTable[] = {
   "this", "THIS",
@@ -226,7 +226,7 @@ void CodeWriter::WriteGoto(std::string_view label) {
 void CodeWriter::WriteIf(std::string_view label) {
   output_ << "// If top of stack is true, goto " << label << std::endl
           << "@SP" << std::endl
-          << "A=M-1" << std::endl
+          << "AM=M-1" << std::endl
           << "D=M" << std::endl
           << "@" << FullyQualifiedLabelName(label) << std::endl
           << "D;JNE" << std::endl << std::endl;
@@ -311,7 +311,7 @@ std::string CodeWriter::ScopeNameFromFileName(std::string_view file_name) {
   size_t pos = file_name.rfind(".vm");
   if (pos == std::string::npos) {
     // TODO: Better error handling.
-    return "BAD_FILE_NAME";
+    return "badFileName";
   }
   return std::string(file_name.substr(0, pos));
 }
