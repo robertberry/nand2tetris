@@ -239,7 +239,7 @@ void CodeWriter::WriteReturn() {
 }
 
 void CodeWriter::SetFileName(std::string_view file_name) {
-  static_name_ = StaticNameFromFileName(file_name);
+  file_scope_ = ScopeNameFromFileName(file_name);
 }
 
 void CodeWriter::Close() {
@@ -295,11 +295,11 @@ void CodeWriter::WriteSetAToLocation(std::string_view segment, int offset) {
     int memory_location = 5 + offset;
     output_ << "@" << memory_location << std::endl;
   } else if (segment == "static") {
-    output_ << "@" << static_name_ << "." << offset << std::endl;
+    output_ << "@" << file_scope_ << "." << offset << std::endl;
   }
 }
 
-std::string CodeWriter::StaticNameFromFileName(std::string_view file_name) {
+std::string CodeWriter::ScopeNameFromFileName(std::string_view file_name) {
   size_t pos = file_name.rfind(".vm");
   if (pos == std::string::npos) {
     // TODO: Better error handling.

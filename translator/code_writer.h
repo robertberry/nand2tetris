@@ -50,7 +50,7 @@ class CodeWriter final {
   void Close();
 
  private:
-  std::string static_name_ = "_NO_FILE_NAME_SET";
+  std::string file_scope_ = "_NO_FILE_NAME_SET";
 
   std::ostream& output_;
 
@@ -58,7 +58,7 @@ class CodeWriter final {
 
   static std::string_view SegmentNameToAssemblySymbol(std::string_view segment_name);
 
-  static std::string StaticNameFromFileName(std::string_view file_name);
+  static std::string ScopeNameFromFileName(std::string_view file_name);
 
   std::string GenSym();
 
