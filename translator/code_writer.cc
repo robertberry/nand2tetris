@@ -349,8 +349,8 @@ M=D+1
 
   output_ << "// Return" << std::endl
           << save_arg_to_r13
-          << pop_stack_to_arg0
           << save_return_address_to_r15
+          << pop_stack_to_arg0
           << pop_stack_frame_to_d
           << "@THAT" << std::endl
           << "M=D" << std::endl
