@@ -1,3 +1,12 @@
+cc_library(
+    name = "compilation_engine",
+    hdrs = ["compilation_engine.h"],
+    srcs = ["compilation_engine.cc"],
+    deps = [
+        ":jack_tokenizer"
+    ]
+)
+
 cc_binary(
     name = "compiler",
     srcs = ["compiler.cc"],
