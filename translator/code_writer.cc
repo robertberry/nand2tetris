@@ -269,6 +269,12 @@ M=M+1
 A=M-1
 M=D
 )asm";
+  std::string_view push_m = R"asm(D=M
+@SP
+M=M+1
+A=M-1
+M=D
+)asm";
   std::string_view set_lcl_to_sp = R"asm(@SP
 D=M
 @LCL
@@ -278,16 +284,16 @@ M=D
           << "@" << return_label << std::endl
           << push_a << std::endl
           << "@LCL" << std::endl
-          << push_a << std::endl
+          << push_m << std::endl
           << "@ARG" << std::endl
-          << push_a << std::endl
+          << push_m << std::endl
           << "@THIS" << std::endl
-          << push_a << std::endl
+          << push_m << std::endl
           << "@THAT" << std::endl
-          << push_a << std::endl
+          << push_m << std::endl
           << "@SP" << std::endl
           << "D=M" << std::endl
-          << "@" << n_args + 5 << std::endl
+          << "@" << (n_args + 5) << std::endl
           << "D=D-A" << std::endl
           << "@ARG" << std::endl
           << "M=D" << std::endl
@@ -302,32 +308,29 @@ void CodeWriter::WriteReturn() {
 AM=M-1
 D=M
 @ARG
+A=M
 M=D
 )asm";
-  
   std::string_view save_return_address_to_r15 = R"asm(@LCL
-D=A
+D=M
 @5
 D=D-A
 @R15
 M=D
 )asm";
-
   std::string_view save_arg_to_r16 = R"asm(@ARG
 D=M
 @R16
 M=D
 )asm";
-  
   std::string_view pop_stack_frame_to_d = R"asm(@LCL
 AM=M-1
 D=M
 )asm";
-
   std::string_view jump_to_r15 = R"asm(@R15
+A=M
 0;JMP
 )asm";
-
   std::string_view set_sp_to_r16_plus_1 = R"asm(@R16
 D=M
 @SP
@@ -346,15 +349,12 @@ M=D+1
           << "M=D" << std::endl
           << pop_stack_frame_to_d
           << "@ARG" << std::endl
+          << "M=D" << std::endl
           << pop_stack_frame_to_d
           << "@LCL" << std::endl
           << "M=D" << std::endl
           << set_sp_to_r16_plus_1 << std::endl
           << jump_to_r15 << std::endl;
-
-  // TODO: need to reset SP, as it has all the locals, etc.
-  
-  function_scope_ = kFunctionScopeNone;
 }
 
 void CodeWriter::SetFileName(std::string_view file_name) {
@@ -429,14 +429,14 @@ std::string CodeWriter::ScopeNameFromFileName(std::string_view file_name) {
 
 std::string CodeWriter::FullyQualifiedLabelName(std::string_view label) {
   std::ostringstream fq_label;
-  fq_label << file_scope_ << "." << function_scope_ << "$" << label;
+  fq_label << function_scope_ << "$" << label;
   return fq_label.str();
 }
 
 std::string CodeWriter::GenerateReturnLabel() {
   int code = next_return_code_++;
   std::ostringstream label;
-  label << file_scope_ << "." << function_scope_ << "$ret" << code;
+  label << function_scope_ << "$ret" << code;
   return label.str();
 }
 
