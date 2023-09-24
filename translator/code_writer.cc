@@ -104,10 +104,12 @@ CodeWriter::CodeWriter(std::ostream& output) :
     function_scope_(kFunctionScopeNone), output_(output) {}
 
 void CodeWriter::WriteBootstrap() {
-  output_ << R"asm(@256
+  output_ << R"asm(// VM bootstrap
+@256
 D=A
 @SP
 M=D
+
 )asm";
   WriteCall("Sys.init", /*n_args=*/ 0);
 }
