@@ -112,6 +112,12 @@ M=D
 
 )asm";
   WriteCall("Sys.init", /*n_args=*/ 0);
+  
+  output_ << R"asm(// If Sys.init returns, enter infinite loop
+@EOP
+0;JMP
+
+)asm";
 }
 
 void CodeWriter::WriteArithmetic(std::string_view command) {
@@ -314,7 +320,8 @@ M=D
   std::string_view save_return_address_to_r15 = R"asm(@LCL
 D=M
 @5
-D=D-A
+A=D-A
+D=M
 @R15
 M=D
 )asm";
@@ -376,6 +383,7 @@ std::string_view CodeWriter::SegmentNameToAssemblySymbol(std::string_view segmen
     }
   }
   // TODO: Better error handling.
+  std::cerr << "Could not find segment symbol for " << segment_name << std::endl;
   exit(1);
 }
 
