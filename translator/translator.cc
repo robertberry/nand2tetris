@@ -53,6 +53,18 @@ void HandleFile(CodeWriter& code_writer, std::filesystem::path file_path) {
         code_writer.WriteIf(instruction.arg1);
         break;
 
+      case CommandType::kCCall:
+        code_writer.WriteCall(instruction.arg1, instruction.arg2);
+        break;
+
+      case CommandType::kCFunction:
+        code_writer.WriteFunction(instruction.arg1, instruction.arg2);
+        break;
+
+      case CommandType::kCReturn:
+        code_writer.WriteReturn();
+        break;
+
       default:
         std::cerr << "Unexpected instruction type" << std::endl;
         exit(3);

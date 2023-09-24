@@ -80,7 +80,6 @@ void Parser::Advance() {
       break;
     };
 
-    case CommandType::kCCall:
     case CommandType::kCLabel:
     case CommandType::kCIf:
     case CommandType::kCGoto: {
@@ -88,8 +87,10 @@ void Parser::Advance() {
       break;
     }
 
+    case CommandType::kCCall:
     case CommandType::kCFunction: {
       current_instruction_.arg1 = ExpectWord("Expected function name");
+      current_instruction_.arg2 = ExpectNumber("Expected arity");
       break;
     }
 
