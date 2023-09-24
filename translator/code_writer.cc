@@ -254,17 +254,20 @@ void CodeWriter::WriteFunction(std::string_view function_name, int n_vars) {
   next_return_code_ = 0;
 
   output_ << "// Function " << function_name << std::endl
-          << "(" << FullyQualifiedFunctionName(function_name) << ")" << std::endl
-          << "@SP" << std::endl
-          << "A=M" << std::endl;
-  for (int i = 0; i < n_vars; i++) {
-    output_ << "M=0" << std::endl
-            << "A=A+1" << std::endl;
+          << "(" << FullyQualifiedFunctionName(function_name) << ")" << std::endl;
+
+  if (n_vars > 0) {
+    output_ << "@SP" << std::endl
+            << "A=M" << std::endl;
+    for (int i = 0; i < n_vars; i++) {
+      output_ << "M=0" << std::endl
+              << "A=A+1" << std::endl;
+    }
+    output_ << "@" << n_vars << std::endl
+            << "D=A" << std::endl
+            << "@SP" << std::endl
+            << "M=M+D" << std::endl;
   }
-  output_ << "@" << n_vars << std::endl
-          << "D=A" << std::endl
-          << "@SP" << std::endl
-          << "M=M+D" << std::endl;
 }
 
 void CodeWriter::WriteCall(std::string_view function_name, int n_args) {
@@ -325,9 +328,9 @@ D=M
 @R15
 M=D
 )asm";
-  std::string_view save_arg_to_r16 = R"asm(@ARG
+  std::string_view save_arg_to_r13 = R"asm(@ARG
 D=M
-@R16
+@R13
 M=D
 )asm";
   std::string_view pop_stack_frame_to_d = R"asm(@LCL
@@ -338,14 +341,14 @@ D=M
 A=M
 0;JMP
 )asm";
-  std::string_view set_sp_to_r16_plus_1 = R"asm(@R16
+  std::string_view set_sp_to_r13_plus_1 = R"asm(@R13
 D=M
 @SP
 M=D+1
 )asm";
 
   output_ << "// Return" << std::endl
-          << save_arg_to_r16
+          << save_arg_to_r13
           << pop_stack_to_arg0
           << save_return_address_to_r15
           << pop_stack_frame_to_d
@@ -360,7 +363,7 @@ M=D+1
           << pop_stack_frame_to_d
           << "@LCL" << std::endl
           << "M=D" << std::endl
-          << set_sp_to_r16_plus_1 << std::endl
+          << set_sp_to_r13_plus_1 << std::endl
           << jump_to_r15 << std::endl;
 }
 
