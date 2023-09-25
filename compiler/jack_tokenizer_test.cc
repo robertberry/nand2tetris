@@ -132,5 +132,18 @@ function bark() {
   EXPECT_EQ(tokenizer.GetKeyWord(), KeyWord::kFunction);
 }
 
+TEST(JackTokenizerTest, AdvanceIdentifier) {
+  std::istringstream input(R"jack(
+/* best id */
+bonchon
+)jack");
+  JackTokenizer tokenizer(input);
+
+  tokenizer.Advance();
+
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kIdentifier);
+  EXPECT_EQ(tokenizer.GetIdentifier(), "bonchon");
+}
+
 }  // namespace
 }  // namespace jack
