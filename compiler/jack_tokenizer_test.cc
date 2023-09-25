@@ -54,5 +54,28 @@ int
   EXPECT_TRUE(tokenizer.HasMoreTokens());
 }
 
+TEST(JackTokenizerTest, AdvanceIntConst) {
+  std::istringstream input(R"jack(
+// The answer to everything.
+42
+)jack");
+  JackTokenizer tokenizer(input);
+
+  tokenizer.Advance();
+
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kIntConst);
+  EXPECT_EQ(tokenizer.GetIntVal(), 42);
+}
+
+TEST(JackTokenizerTest, AdvanceSymbol) {
+  std::istringstream input(">");
+  JackTokenizer tokenizer(input);
+
+  tokenizer.Advance();
+
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kSymbol);
+  EXPECT_EQ(tokenizer.GetSymbol(), '>');
+}
+
 }  // namespace
 }  // namespace jack

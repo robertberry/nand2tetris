@@ -69,7 +69,22 @@ class JackTokenizer final {
  private:
   std::istream& input_;
 
+  TokenType token_type_;
+
+  KeyWord key_word_;
+
+  char symbol_;
+
+  std::string identifier_;
+
+  int int_val_;
+
+  std::string string_val_;
+
   void SkipWhitespaceAndComments();
+
+  // Returns true if ch is a symbol used in a Jack program.
+  bool IsSymbol(char ch);
 };
 
 }  // namespace jack
