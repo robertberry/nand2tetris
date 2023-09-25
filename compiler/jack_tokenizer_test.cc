@@ -77,5 +77,19 @@ TEST(JackTokenizerTest, AdvanceSymbol) {
   EXPECT_EQ(tokenizer.GetSymbol(), '>');
 }
 
+TEST(JackTokenizerTest, AdvanceStringConst) {
+  std::istringstream input(R"jack(
+// The answer to everything.
+"Forty two"
+)jack");
+  JackTokenizer tokenizer(input);
+
+  tokenizer.Advance();
+
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kStringConst);
+  EXPECT_EQ(tokenizer.GetStringVal(), "Forty two");
+}
+
+
 }  // namespace
 }  // namespace jack

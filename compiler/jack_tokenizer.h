@@ -85,6 +85,10 @@ class JackTokenizer final {
 
   // Returns true if ch is a symbol used in a Jack program.
   bool IsSymbol(char ch);
+
+  std::string ExpectStringConst();
+
+  void ExpectChar(char expected);
 };
 
 }  // namespace jack

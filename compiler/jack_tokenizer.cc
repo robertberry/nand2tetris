@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <string>
+#include <sstream>
 
 namespace jack {
 
@@ -29,8 +30,8 @@ void JackTokenizer::Advance() {
     token_type_ = TokenType::kIntConst;
     input_ >> int_val_;
   } else if (next_char == '"') {
-    // Consume string const.
-    // TODO
+    token_type_ = TokenType::kStringConst;
+    string_val_ = ExpectStringConst();
   } else if (IsSymbol(next_char)) {
     token_type_ = TokenType::kSymbol;
     symbol_ = (char) next_char;
@@ -130,6 +131,39 @@ bool JackTokenizer::IsSymbol(char ch) {
     }
   }
   return false;
+}
+
+std::string JackTokenizer::ExpectStringConst() {
+  ExpectChar('"');
+  std::ostringstream str_const;
+  int ch;
+
+  while ((ch = input_.get()) != EOF) {
+    if (ch == '"') {
+      return str_const.str();
+    }
+    str_const << ((char) ch);
+  }
+
+  // TODO: Better error handling.
+  std::cerr << "Expected string const but got EOF" << std::endl;
+  exit(1);
+}
+
+void JackTokenizer::ExpectChar(char expected) {
+  int ch = input_.get();
+
+  // TODO: Better error handling.
+  if (ch != expected) {
+    std::cerr << "Expected " << expected;
+    if (ch == EOF) {
+      std::cerr << " but got EOF";
+    } else {
+      std::cerr << " but got " << ((char) ch);
+    }
+    std::cerr << std::endl;
+    exit(1);
+  }
 }
 
 }  // namespace jack
