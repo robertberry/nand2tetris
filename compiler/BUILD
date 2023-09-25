@@ -17,3 +17,12 @@ cc_library(
     hdrs = ["jack_tokenizer.h"],
     srcs = ["jack_tokenizer.cc"],
 )
+
+cc_test(
+    name = "jack_tokenizer_test",
+    srcs = ["jack_tokenizer_test.cc"],
+    deps = [
+        ":jack_tokenizer",
+        "@com_google_googletest//:gtest_main"
+    ]
+)

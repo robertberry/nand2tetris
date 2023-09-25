@@ -68,6 +68,8 @@ class JackTokenizer final {
 
  private:
   std::istream& input_;
+
+  void SkipWhitespaceAndComments();
 };
 
 }  // namespace jack
