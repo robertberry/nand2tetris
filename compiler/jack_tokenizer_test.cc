@@ -90,6 +90,47 @@ TEST(JackTokenizerTest, AdvanceStringConst) {
   EXPECT_EQ(tokenizer.GetStringVal(), "Forty two");
 }
 
+TEST(JackTokenizerTest, AdvanceClass) {
+  std::istringstream input(R"jack(
+// The most useful object.
+class Bonchon {
+}
+)jack");
+  JackTokenizer tokenizer(input);
+
+  tokenizer.Advance();
+
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kKeyWord);
+  EXPECT_EQ(tokenizer.GetKeyWord(), KeyWord::kClass);
+}
+
+TEST(JackTokenizerTest, AdvanceMethod) {
+  std::istringstream input(R"jack(
+/* woofs! */
+method bark() {
+}
+)jack");
+  JackTokenizer tokenizer(input);
+
+  tokenizer.Advance();
+
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kKeyWord);
+  EXPECT_EQ(tokenizer.GetKeyWord(), KeyWord::kMethod);
+}
+
+TEST(JackTokenizerTest, AdvanceFunction) {
+  std::istringstream input(R"jack(
+/* woofs! */
+function bark() {
+}
+)jack");
+  JackTokenizer tokenizer(input);
+
+  tokenizer.Advance();
+
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kKeyWord);
+  EXPECT_EQ(tokenizer.GetKeyWord(), KeyWord::kFunction);
+}
 
 }  // namespace
 }  // namespace jack

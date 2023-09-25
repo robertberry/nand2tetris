@@ -1,14 +1,41 @@
 #include "compiler/jack_tokenizer.h"
 
 #include <ctype.h>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <sstream>
+#include <utility>
 
 namespace jack {
 
 // Valid symbols for use in a Jack program.
 constexpr char kValidSymbols[] = {
-  '>', '=', '<', '+', '-'
+  '>', '=', '<', '+', '-', '{', '}', '(', ')'
+};
+
+constexpr std::pair<std::string_view, KeyWord> kKeyWordTable[] = {
+  {"class", KeyWord::kClass},
+  {"method", KeyWord::kMethod},
+  {"function", KeyWord::kFunction},
+  {"constructor", KeyWord::kConstructor},
+  {"int", KeyWord::kInt},
+  {"bool", KeyWord::kBoolean},
+  {"char", KeyWord::kChar},
+  {"void", KeyWord::kVoid},
+  {"var", KeyWord::kVar},
+  {"static", KeyWord::kStatic},
+  {"field", KeyWord::kField},
+  {"let", KeyWord::kLet},
+  {"do", KeyWord::kDo},
+  {"if", KeyWord::kIf},
+  {"else", KeyWord::kElse},
+  {"while", KeyWord::kWhile},
+  {"return", KeyWord::kReturn},
+  {"true", KeyWord::kTrue},
+  {"false", KeyWord::kFalse},
+  {"null", KeyWord::kNull},
+  {"this", KeyWord::kThis}
 };
 
 bool JackTokenizer::HasMoreTokens() {
@@ -36,8 +63,15 @@ void JackTokenizer::Advance() {
     token_type_ = TokenType::kSymbol;
     symbol_ = (char) next_char;
   } else {
-    // Get word, check if it is keyWord.
-    // TODO
+    std::string bare_word = ExpectBareWord();
+    std::optional<KeyWord> key_word = GetKeyWord(bare_word);
+    if (key_word) {
+      token_type_ = TokenType::kKeyWord;
+      key_word_ = *key_word;
+    } else {
+      token_type_ = TokenType::kIdentifier;
+      identifier_ = bare_word;
+    }
   }
 }
 
@@ -164,6 +198,29 @@ void JackTokenizer::ExpectChar(char expected) {
     std::cerr << std::endl;
     exit(1);
   }
+}
+
+std::string JackTokenizer::ExpectBareWord() {
+  std::ostringstream bare_word;
+  int ch;
+  while ((ch = input_.get()) != EOF) {
+    
+    // TODO: Update to only accept chars that can be used in identifiers.
+    if (isspace(ch)) {
+      break;
+    }
+    bare_word << ((char) ch);
+  }
+  return bare_word.str();
+}
+
+std::optional<KeyWord> JackTokenizer::GetKeyWord(std::string_view identifier) {
+  for (std::pair<std::string_view, KeyWord> entry : kKeyWordTable) {
+    if (identifier == entry.first) {
+      return entry.second;
+    }
+  }
+  return {};
 }
 
 }  // namespace jack

@@ -2,12 +2,13 @@
 #define COMPILER_JACK_TOKENIZER_H_
 
 #include <iostream>
+#include <optional>
 #include <string>
 
 namespace jack {
 
 enum class TokenType {
-  kKeyword,
+  kKeyWord,
   kSymbol,
   kIdentifier,
   kIntConst,
@@ -89,6 +90,10 @@ class JackTokenizer final {
   std::string ExpectStringConst();
 
   void ExpectChar(char expected);
+
+  std::string ExpectBareWord();
+
+  std::optional<KeyWord> GetKeyWord(std::string_view identifier);
 };
 
 }  // namespace jack
