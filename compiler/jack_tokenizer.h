@@ -87,6 +87,12 @@ class JackTokenizer final {
   // Returns true if ch is a symbol used in a Jack program.
   bool IsSymbol(char ch);
 
+  // Returns true if ch is a valid character for use in an identifier.
+  // Note: although digits are valid characters for an identifier, the
+  // first character must not be a digit, so this should be separately
+  // checked.
+  bool IsIdentifierChar(char ch);
+
   std::string ExpectStringConst();
 
   void ExpectChar(char expected);

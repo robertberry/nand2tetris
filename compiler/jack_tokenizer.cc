@@ -11,7 +11,8 @@ namespace jack {
 
 // Valid symbols for use in a Jack program.
 constexpr char kValidSymbols[] = {
-  '>', '=', '<', '+', '-', '{', '}', '(', ')'
+  '>', '<', '+', '-', '{', '}', '(', ')', '[', ']',
+  '.', ',', ';', '*', '/', '&', '|', '=', '~'
 };
 
 constexpr std::pair<std::string_view, KeyWord> kKeyWordTable[] = {
@@ -202,16 +203,30 @@ void JackTokenizer::ExpectChar(char expected) {
 
 std::string JackTokenizer::ExpectBareWord() {
   std::ostringstream bare_word;
-  int ch;
-  while ((ch = input_.get()) != EOF) {
-    
-    // TODO: Update to only accept chars that can be used in identifiers.
-    if (isspace(ch)) {
-      break;
-    }
-    bare_word << ((char) ch);
+  int ch = input_.get();
+  if (isdigit(ch)) {
+    std::cerr << "Expected bare word but it should not start with a digit" << std::endl;
+    exit(1);
   }
+
+  bool consumed_char = false;
+  while (ch != EOF && IsIdentifierChar(ch)) {
+    bare_word << ((char) ch);
+    consumed_char = true;
+    ch = input_.get();
+  }
+  input_.unget();
+
+  if (!consumed_char) {
+    std::cerr << "Expected bare word" << std::endl;
+    exit(1);
+  }
+  
   return bare_word.str();
+}
+
+bool JackTokenizer::IsIdentifierChar(char ch) {
+  return isdigit(ch) || isalpha(ch) || ch == '_';
 }
 
 std::optional<KeyWord> JackTokenizer::GetKeyWord(std::string_view identifier) {

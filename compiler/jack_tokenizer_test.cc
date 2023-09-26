@@ -145,5 +145,23 @@ bonchon
   EXPECT_EQ(tokenizer.GetIdentifier(), "bonchon");
 }
 
+TEST(JackTokenizerTest, AdvancePastKeyWordToSymbol) {
+  std::istringstream input(R"jack(
+/* loop de loop */
+while(true) {
+  do printLine("Bonchon!");
+}
+)jack");
+  JackTokenizer tokenizer(input);
+
+  tokenizer.Advance();
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kKeyWord);
+  EXPECT_EQ(tokenizer.GetKeyWord(), KeyWord::kWhile);
+  tokenizer.Advance();
+
+  ASSERT_EQ(tokenizer.GetTokenType(), TokenType::kSymbol);
+  ASSERT_EQ(tokenizer.GetSymbol(), '(');
+}
+
 }  // namespace
 }  // namespace jack
