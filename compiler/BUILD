@@ -26,3 +26,18 @@ cc_test(
         "@com_google_googletest//:gtest_main"
     ]
 )
+
+cc_library(
+    name = "xml_writer",
+    hdrs = ["xml_writer.h"],
+    srcs = ["xml_writer.cc"],
+)
+
+cc_test(
+    name = "xml_writer_test",
+    srcs = ["xml_writer_test.cc"],
+    deps = [
+        ":xml_writer",
+        "@com_google_googletest//:gtest_main"
+    ]
+)
