@@ -46,6 +46,10 @@ class CompilationEngine final {
   JackTokenizer& tokenizer_;
 
   std::ostream& output_;
+
+  void ExpectKeyWord(KeyWord keyWord);
+
+  void ExpectSymbol(char symbol);
 };
 
 }  // namespace jack

@@ -39,6 +39,8 @@ enum class KeyWord {
   kThis
 };
 
+std::ostream& operator<<(std::ostream& out, const KeyWord key_word);
+
 class JackTokenizer final {
  public:
   explicit JackTokenizer(std::istream& input) : input_(input) {}

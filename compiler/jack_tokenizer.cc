@@ -39,6 +39,15 @@ constexpr std::pair<std::string_view, KeyWord> kKeyWordTable[] = {
   {"this", KeyWord::kThis}
 };
 
+std::ostream& operator<<(std::ostream& out, const KeyWord key_word) {
+  for (std::pair<std::string_view, KeyWord> entry : kKeyWordTable) {
+    if (entry.second == key_word) {
+      out << entry.first;
+      break;
+    }
+  }
+}
+
 bool JackTokenizer::HasMoreTokens() {
   SkipWhitespaceAndComments();
   return input_.peek() != EOF;
