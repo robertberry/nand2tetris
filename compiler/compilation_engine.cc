@@ -4,6 +4,10 @@
 
 namespace jack {
 
+constexpr char kOps[] = {
+  '+', '-', '=', '>', '<'
+};
+
 void CompilationEngine::CompileClass() {
   // TODO
 }
@@ -42,12 +46,14 @@ void CompilationEngine::CompileIf() {
 
 void CompilationEngine::CompileWhile() {
   ExpectKeyWord(KeyWord::kWhile);
+  xml_writer_.OpenTag("whileStatement");
   ExpectSymbol('(');
   CompileExpression();
   ExpectSymbol(')');
   ExpectSymbol('{');
   CompileStatements();
-  ExpectSymbol('}');
+    ExpectSymbol('}');
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileDo() {
@@ -59,11 +65,40 @@ void CompilationEngine::CompileReturn() {
 }
 
 void CompilationEngine::CompileExpression() {
-  // TODO
+  xml_writer_.OpenTag("expression");
+  CompileTerm();
+  if (tokenizer_.GetTokenType() == TokenType::kSymbol && 
+      IsOp(tokenizer_.GetSymbol())) {
+    ExpectSymbol(tokenizer_.GetSymbol());
+    CompileTerm();
+  }
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileTerm() {
-  // TODO
+  xml_writer_.OpenTag("term");
+  switch (tokenizer_.GetTokenType()) {
+    case TokenType::kIntConst: {
+      ExpectIntConst();
+      break;
+    }
+
+    case TokenType::kStringConst: {
+      ExpectStringConst();
+      break;
+    }
+
+    case TokenType::kIdentifier: {
+      ExpectIdentifier();
+      break;
+    }
+
+    default: {
+      std::cerr << "Expected constant or var name: " << tokenizer_.GetSymbol() << std::endl;
+      exit(1);
+    }
+  }
+  xml_writer_.CloseTag();
 }
 
 int CompilationEngine::CompileExpressionList() {
@@ -86,7 +121,47 @@ void CompilationEngine::ExpectSymbol(char symbol) {
     std::cerr << "Expected symbol " << symbol << std::endl;
     exit(1);
   }
+  std::string symbol_string(1, symbol);
+  xml_writer_.AddTagWithContent("symbol", symbol_string);
   tokenizer_.Advance();
+}
+
+void CompilationEngine::ExpectIntConst() {
+  if (tokenizer_.GetTokenType() != TokenType::kIntConst) {
+    std::cerr << "Expected int const" << std::endl;
+    exit(1);
+  }
+  xml_writer_.AddTagWithContent(
+      "intConst", 
+      std::to_string(tokenizer_.GetIntVal()));
+  tokenizer_.Advance();
+}
+
+void CompilationEngine::ExpectStringConst() {
+  if (tokenizer_.GetTokenType() != TokenType::kStringConst) {
+    std::cerr << "Expected string const" << std::endl;
+    exit(1);
+  }
+  xml_writer_.AddTagWithContent("stringConst", tokenizer_.GetStringVal());
+  tokenizer_.Advance();
+}
+
+void CompilationEngine::ExpectIdentifier() {
+  if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
+    std::cerr << "Expected identifier" << std::endl;
+    exit(1);
+  }
+  xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
+  tokenizer_.Advance();
+}
+
+bool CompilationEngine::IsOp(char ch) {
+  for (char op : kOps) {
+    if (op == ch) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace jack

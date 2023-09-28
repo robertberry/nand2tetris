@@ -3,7 +3,17 @@ cc_library(
     hdrs = ["compilation_engine.h"],
     srcs = ["compilation_engine.cc"],
     deps = [
-        ":jack_tokenizer"
+        ":jack_tokenizer",
+        ":xml_writer"
+    ]
+)
+
+cc_test(
+    name = "compilation_engine_test",
+    srcs = ["compilation_engine_test.cc"],
+    deps = [
+        ":compilation_engine",
+        "@com_google_googletest//:gtest_main"
     ]
 )
 

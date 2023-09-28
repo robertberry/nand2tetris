@@ -148,7 +148,7 @@ bonchon
 TEST(JackTokenizerTest, AdvancePastKeyWordToSymbol) {
   std::istringstream input(R"jack(
 /* loop de loop */
-while(true) {
+while(x) {
   do printLine("Bonchon!");
 }
 )jack");
@@ -158,9 +158,11 @@ while(true) {
   EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kKeyWord);
   EXPECT_EQ(tokenizer.GetKeyWord(), KeyWord::kWhile);
   tokenizer.Advance();
-
-  ASSERT_EQ(tokenizer.GetTokenType(), TokenType::kSymbol);
-  ASSERT_EQ(tokenizer.GetSymbol(), '(');
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kSymbol);
+  EXPECT_EQ(tokenizer.GetSymbol(), '(');
+  tokenizer.Advance();
+  EXPECT_EQ(tokenizer.GetTokenType(), TokenType::kIdentifier);
+  EXPECT_EQ(tokenizer.GetIdentifier(), "x");
 }
 
 }  // namespace

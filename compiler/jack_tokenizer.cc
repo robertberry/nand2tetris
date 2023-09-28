@@ -70,10 +70,15 @@ void JackTokenizer::Advance() {
     token_type_ = TokenType::kStringConst;
     string_val_ = ExpectStringConst();
   } else if (IsSymbol(next_char)) {
+    ExpectChar(next_char);
     token_type_ = TokenType::kSymbol;
     symbol_ = (char) next_char;
   } else {
     std::string bare_word = ExpectBareWord();
+    if (bare_word.empty()) {
+      std::cerr << "Empty bare word" << std::endl;
+      exit(1);
+    }
     std::optional<KeyWord> key_word = GetKeyWord(bare_word);
     if (key_word) {
       token_type_ = TokenType::kKeyWord;

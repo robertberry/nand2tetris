@@ -4,13 +4,14 @@
 #include <iostream>
 
 #include "compiler/jack_tokenizer.h"
+#include "compiler/xml_writer.h"
 
 namespace jack {
 
 class CompilationEngine final {
  public:
   CompilationEngine(JackTokenizer& tokenizer, std::ostream& output) : 
-      tokenizer_(tokenizer), output_(output) {}
+      tokenizer_(tokenizer), xml_writer_(output) {}
 
   void CompileClass();
 
@@ -45,11 +46,19 @@ class CompilationEngine final {
  private:
   JackTokenizer& tokenizer_;
 
-  std::ostream& output_;
+  XmlWriter xml_writer_;
 
   void ExpectKeyWord(KeyWord keyWord);
 
   void ExpectSymbol(char symbol);
+
+  void ExpectIntConst();
+
+  void ExpectStringConst();
+
+  void ExpectIdentifier();
+
+  static bool IsOp(char ch);
 };
 
 }  // namespace jack
