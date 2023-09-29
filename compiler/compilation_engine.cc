@@ -253,6 +253,7 @@ void CompilationEngine::CompileSubroutineCall() {
   CompileExpressionList();
   ExpectSymbol(')');
   xml_writer_.CloseTag();
+  // TODO: also support method calls.
 }
 
 bool CompilationEngine::IsOp(char ch) {
