@@ -58,5 +58,26 @@ let shiba = "bonchon";
 </letStatement>)xml");
 }
 
+TEST(CompilationEngineTest, ReturnStatementToXml) {
+  std::istringstream input(R"jack(
+return 42;
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileReturn();
+
+  EXPECT_EQ(output.str(), R"xml(<returnStatement>
+  <expression>
+    <term>
+      <intConstant>42</intConstant>
+    </term>
+  </expression>
+  <symbol>;</symbol>
+</returnStatement>)xml");
+}
+
 }  // namespace
 }  // namespace jack

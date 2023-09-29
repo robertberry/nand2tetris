@@ -71,7 +71,14 @@ void CompilationEngine::CompileDo() {
 }
 
 void CompilationEngine::CompileReturn() {
-  // TODO
+  ExpectKeyWord(KeyWord::kReturn);
+  xml_writer_.OpenTag("returnStatement");
+  if (!(tokenizer_.GetTokenType() == TokenType::kSymbol &&
+        tokenizer_.GetSymbol() == ';')) {
+    CompileExpression();
+  }
+  ExpectSymbol(';');
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileExpression() {
