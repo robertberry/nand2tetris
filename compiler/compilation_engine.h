@@ -58,6 +58,8 @@ class CompilationEngine final {
 
   void ExpectIdentifier();
 
+  void CompileVarName();
+
   static bool IsOp(char ch);
 
   static std::string EscapeForXml(char ch);

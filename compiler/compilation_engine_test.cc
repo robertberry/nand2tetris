@@ -11,6 +11,7 @@ namespace {
 TEST(CompilationEngineTest, IfStatementToXml) {
   std::istringstream input(R"jack(
 if (x > 0) {
+  return;
 }
 )jack");
   JackTokenizer tokenizer(input);
@@ -24,15 +25,20 @@ if (x > 0) {
   <symbol>(</symbol>
   <expression>
     <term>
-      <identifier>x</identifier>
+      <varName>x</varName>
     </term>
     <op>&gt;</op>
     <term>
-      <intConstant>0</intConstant>
+      <intConst>0</intConst>
     </term>
   </expression>
   <symbol>)</symbol>
   <symbol>{</symbol>
+  <statements>
+    <returnStatement>
+      <symbol>;</symbol>
+    </returnStatement>
+  </statements>
   <symbol>}</symbol>
 </ifStatement>)xml");
 }
@@ -40,6 +46,8 @@ if (x > 0) {
 TEST(CompilationEngineTest, WhileStatementToXml) {
   std::istringstream input(R"jack(
 while (x) {
+  let y = y + 1;
+  let x = x - 1;
 }
 )jack");
   JackTokenizer tokenizer(input);
@@ -53,11 +61,41 @@ while (x) {
   <symbol>(</symbol>
   <expression>
     <term>
-      <identifier>x</identifier>
+      <varName>x</varName>
     </term>
   </expression>
   <symbol>)</symbol>
   <symbol>{</symbol>
+  <statements>
+    <letStatement>
+      <varName>y</varName>
+      <symbol>=</symbol>
+      <expression>
+        <term>
+          <varName>y</varName>
+        </term>
+        <op>+</op>
+        <term>
+          <intConst>1</intConst>
+        </term>
+      </expression>
+      <symbol>;</symbol>
+    </letStatement>
+    <letStatement>
+      <varName>x</varName>
+      <symbol>=</symbol>
+      <expression>
+        <term>
+          <varName>x</varName>
+        </term>
+        <op>-</op>
+        <term>
+          <intConst>1</intConst>
+        </term>
+      </expression>
+      <symbol>;</symbol>
+    </letStatement>
+  </statements>
   <symbol>}</symbol>
 </whileStatement>)xml");
 }
@@ -74,13 +112,11 @@ let shiba = "bonchon";
   engine.CompileLet();
 
   EXPECT_EQ(output.str(), R"xml(<letStatement>
-  <varName>
-    <identifier>shiba</identifier>
-  </varName>
+  <varName>shiba</varName>
   <symbol>=</symbol>
   <expression>
     <term>
-      <stringConstant>bonchon</stringConstant>
+      <stringConst>bonchon</stringConst>
     </term>
   </expression>
   <symbol>;</symbol>
@@ -101,7 +137,7 @@ return 42;
   EXPECT_EQ(output.str(), R"xml(<returnStatement>
   <expression>
     <term>
-      <intConstant>42</intConstant>
+      <intConst>42</intConst>
     </term>
   </expression>
   <symbol>;</symbol>

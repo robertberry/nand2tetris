@@ -33,15 +33,42 @@ void CompilationEngine::CompileVarDec() {
 }
 
 void CompilationEngine::CompileStatements() {
-  // TODO
+  xml_writer_.OpenTag("statements");
+  while (tokenizer_.GetTokenType() == TokenType::kKeyWord) {
+    switch (tokenizer_.GetKeyWord()) {
+      case KeyWord::kLet: {
+        CompileLet();
+        break;
+      }
+      case KeyWord::kDo: {
+        CompileDo();
+        break;
+      }
+      case KeyWord::kIf: {
+        CompileIf();
+        break;
+      }
+      case KeyWord::kWhile: {
+        CompileWhile();
+        break;
+      }
+      case KeyWord::kReturn: {
+        CompileReturn();
+        break;
+      }
+      default: {
+        xml_writer_.CloseTag();
+        return;
+      }
+    }
+  }
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileLet() {
   ExpectKeyWord(KeyWord::kLet);
   xml_writer_.OpenTag("letStatement");
-  xml_writer_.OpenTag("varName");
-  ExpectIdentifier();
-  xml_writer_.CloseTag();
+  CompileVarName();
 
   // TODO: Support array indexing.
   ExpectSymbol('=');
@@ -115,7 +142,7 @@ void CompilationEngine::CompileTerm() {
     }
 
     case TokenType::kIdentifier: {
-      ExpectIdentifier();
+      CompileVarName();
       break;
     }
 
@@ -158,7 +185,7 @@ void CompilationEngine::ExpectIntConst() {
     exit(1);
   }
   xml_writer_.AddTagWithContent(
-      "intConstant",
+      "intConst",
       std::to_string(tokenizer_.GetIntVal()));
   tokenizer_.Advance();
 }
@@ -168,7 +195,7 @@ void CompilationEngine::ExpectStringConst() {
     std::cerr << "Expected string const" << std::endl;
     exit(1);
   }
-  xml_writer_.AddTagWithContent("stringConstant", tokenizer_.GetStringVal());
+  xml_writer_.AddTagWithContent("stringConst", tokenizer_.GetStringVal());
   tokenizer_.Advance();
 }
 
@@ -178,6 +205,15 @@ void CompilationEngine::ExpectIdentifier() {
     exit(1);
   }
   xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
+  tokenizer_.Advance();
+}
+
+void CompilationEngine::CompileVarName() {
+  if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
+    std::cerr << "Expected identifier" << std::endl;
+    exit(1);
+  }
+  xml_writer_.AddTagWithContent("varName", tokenizer_.GetIdentifier());
   tokenizer_.Advance();
 }
 
