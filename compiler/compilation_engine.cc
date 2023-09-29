@@ -51,7 +51,15 @@ void CompilationEngine::CompileLet() {
 }
 
 void CompilationEngine::CompileIf() {
-  // TODO
+  ExpectKeyWord(KeyWord::kIf);
+  xml_writer_.OpenTag("ifStatement");
+  ExpectSymbol('(');
+  CompileExpression();
+  ExpectSymbol(')');
+  ExpectSymbol('{');
+  CompileStatements();
+  ExpectSymbol('}');
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileWhile() {
@@ -86,7 +94,8 @@ void CompilationEngine::CompileExpression() {
   CompileTerm();
   if (tokenizer_.GetTokenType() == TokenType::kSymbol && 
       IsOp(tokenizer_.GetSymbol())) {
-    ExpectSymbol(tokenizer_.GetSymbol());
+    xml_writer_.AddTagWithContent("op", EscapeForXml(tokenizer_.GetSymbol()));
+    tokenizer_.Advance();
     CompileTerm();
   }
   xml_writer_.CloseTag();
@@ -179,6 +188,20 @@ bool CompilationEngine::IsOp(char ch) {
     }
   }
   return false;
+}
+
+std::string CompilationEngine::EscapeForXml(char ch) {
+  switch (ch) {
+    case '>':
+      return "&gt;";
+    case '<':
+      return "&lt;";
+    case '&':
+      return "&amp;";
+    default:
+      std::string s(1, ch);
+      return s;
+  }
 }
 
 }  // namespace jack

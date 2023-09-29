@@ -59,6 +59,8 @@ class CompilationEngine final {
   void ExpectIdentifier();
 
   static bool IsOp(char ch);
+
+  static std::string EscapeForXml(char ch);
 };
 
 }  // namespace jack

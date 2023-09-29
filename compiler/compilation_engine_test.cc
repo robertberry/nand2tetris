@@ -8,6 +8,35 @@
 namespace jack {
 namespace {
 
+TEST(CompilationEngineTest, IfStatementToXml) {
+  std::istringstream input(R"jack(
+if (x > 0) {
+}
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileIf();
+
+  EXPECT_EQ(output.str(), R"xml(<ifStatement>
+  <symbol>(</symbol>
+  <expression>
+    <term>
+      <identifier>x</identifier>
+    </term>
+    <op>&gt;</op>
+    <term>
+      <intConstant>0</intConstant>
+    </term>
+  </expression>
+  <symbol>)</symbol>
+  <symbol>{</symbol>
+  <symbol>}</symbol>
+</ifStatement>)xml");
+}
+
 TEST(CompilationEngineTest, WhileStatementToXml) {
   std::istringstream input(R"jack(
 while (x) {
