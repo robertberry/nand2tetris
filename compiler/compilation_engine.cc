@@ -37,7 +37,17 @@ void CompilationEngine::CompileStatements() {
 }
 
 void CompilationEngine::CompileLet() {
-  // TODO
+  ExpectKeyWord(KeyWord::kLet);
+  xml_writer_.OpenTag("letStatement");
+  xml_writer_.OpenTag("varName");
+  ExpectIdentifier();
+  xml_writer_.CloseTag();
+
+  // TODO: Support array indexing.
+  ExpectSymbol('=');
+  CompileExpression();
+  ExpectSymbol(';');
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileIf() {
@@ -52,7 +62,7 @@ void CompilationEngine::CompileWhile() {
   ExpectSymbol(')');
   ExpectSymbol('{');
   CompileStatements();
-    ExpectSymbol('}');
+  ExpectSymbol('}');
   xml_writer_.CloseTag();
 }
 
@@ -132,7 +142,7 @@ void CompilationEngine::ExpectIntConst() {
     exit(1);
   }
   xml_writer_.AddTagWithContent(
-      "intConst", 
+      "intConstant",
       std::to_string(tokenizer_.GetIntVal()));
   tokenizer_.Advance();
 }
@@ -142,7 +152,7 @@ void CompilationEngine::ExpectStringConst() {
     std::cerr << "Expected string const" << std::endl;
     exit(1);
   }
-  xml_writer_.AddTagWithContent("stringConst", tokenizer_.GetStringVal());
+  xml_writer_.AddTagWithContent("stringConstant", tokenizer_.GetStringVal());
   tokenizer_.Advance();
 }
 

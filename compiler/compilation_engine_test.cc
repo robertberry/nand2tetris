@@ -10,7 +10,7 @@ namespace {
 
 TEST(CompilationEngineTest, WhileStatementToXml) {
   std::istringstream input(R"jack(
-while ( x ) {
+while (x) {
 }
 )jack");
   JackTokenizer tokenizer(input);
@@ -31,6 +31,31 @@ while ( x ) {
   <symbol>{</symbol>
   <symbol>}</symbol>
 </whileStatement>)xml");
+}
+
+TEST(CompilationEngineTest, LetStatementToXml) {
+  std::istringstream input(R"jack(
+let shiba = "bonchon";
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileLet();
+
+  EXPECT_EQ(output.str(), R"xml(<letStatement>
+  <varName>
+    <identifier>shiba</identifier>
+  </varName>
+  <symbol>=</symbol>
+  <expression>
+    <term>
+      <stringConstant>bonchon</stringConstant>
+    </term>
+  </expression>
+  <symbol>;</symbol>
+</letStatement>)xml");
 }
 
 }  // namespace

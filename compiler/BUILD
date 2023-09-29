@@ -46,6 +46,7 @@ cc_library(
 cc_test(
     name = "xml_writer_test",
     srcs = ["xml_writer_test.cc"],
+    size = "small",
     deps = [
         ":xml_writer",
         "@com_google_googletest//:gtest_main"
