@@ -144,5 +144,39 @@ return 42;
 </returnStatement>)xml");
 }
 
+TEST(CompilationEngineTest, DoStatementToXml) {
+  std::istringstream input(R"jack(
+do zoomies(bonchon, 3600);
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileDo();
+
+  EXPECT_EQ(output.str(), R"xml(<doStatement>
+  <subroutineCall>
+    <subroutineName>zoomies</subroutineName>
+    <symbol>(</symbol>
+    <expressionList>
+      <expression>
+        <term>
+          <varName>bonchon</varName>
+        </term>
+      </expression>
+      <symbol>,</symbol>
+      <expression>
+        <term>
+          <intConst>3600</intConst>
+        </term>
+      </expression>
+    </expressionList>
+    <symbol>)</symbol>
+  </subroutineCall>
+  <symbol>;</symbol>
+</doStatement>)xml");
+}
+
 }  // namespace
 }  // namespace jack

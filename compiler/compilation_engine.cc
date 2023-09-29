@@ -102,7 +102,11 @@ void CompilationEngine::CompileWhile() {
 }
 
 void CompilationEngine::CompileDo() {
-  // TODO
+  ExpectKeyWord(KeyWord::kDo);
+  xml_writer_.OpenTag("doStatement");
+  CompileSubroutineCall();
+  ExpectSymbol(';');
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileReturn() {
@@ -155,8 +159,24 @@ void CompilationEngine::CompileTerm() {
 }
 
 int CompilationEngine::CompileExpressionList() {
-  // TODO
-  return 0;
+  xml_writer_.OpenTag("expressionList");
+  if (tokenizer_.GetTokenType() == TokenType::kSymbol
+      && tokenizer_.GetSymbol() == ')') {
+    // zero-length expression list.
+    xml_writer_.CloseTag();
+    return 0;
+  }
+  
+  CompileExpression();
+  int size = 1;
+  while (tokenizer_.GetTokenType() == TokenType::kSymbol
+         && tokenizer_.GetSymbol() == ',') {
+    ExpectSymbol(',');
+    CompileExpression();
+    size++;
+  }
+  xml_writer_.CloseTag();
+  return size;
 }
 
 void CompilationEngine::ExpectKeyWord(KeyWord key_word) {
@@ -215,6 +235,24 @@ void CompilationEngine::CompileVarName() {
   }
   xml_writer_.AddTagWithContent("varName", tokenizer_.GetIdentifier());
   tokenizer_.Advance();
+}
+
+void CompilationEngine::CompileSubroutineName() {
+  if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
+    std::cerr << "Expected identifier" << std::endl;
+    exit(1);
+  }
+  xml_writer_.AddTagWithContent("subroutineName", tokenizer_.GetIdentifier());
+  tokenizer_.Advance();
+}
+
+void CompilationEngine::CompileSubroutineCall() {
+  xml_writer_.OpenTag("subroutineCall");
+  CompileSubroutineName();
+  ExpectSymbol('(');
+  CompileExpressionList();
+  ExpectSymbol(')');
+  xml_writer_.CloseTag();
 }
 
 bool CompilationEngine::IsOp(char ch) {
