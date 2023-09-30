@@ -178,5 +178,26 @@ do zoomies(bonchon, 3600);
 </doStatement>)xml");
 }
 
+TEST(CompilationEngineTest, ClassVarDevToXml) {
+  std::istringstream input(R"jack(
+static int x, y;
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileClassVarDec();
+
+  EXPECT_EQ(output.str(), R"xml(<classVarDec>
+  <keyword>static</keyword>
+  <keyword>int</keyword>
+  <identifier>x</identifier>
+  <symbol>,</symbol>
+  <identifier>y</identifier>
+  <symbol>;</symbol>
+</classVarDec>)xml");
+}
+
 }  // namespace
 }  // namespace jack

@@ -13,7 +13,82 @@ void CompilationEngine::CompileClass() {
 }
 
 void CompilationEngine::CompileClassVarDec() {
-  // TODO
+  xml_writer_.OpenTag("classVarDec");
+  if (tokenizer_.GetTokenType() != TokenType::kKeyWord) {
+    std::cerr << "Expected static or field" << std::endl;
+    exit(1);
+  }
+  switch (tokenizer_.GetKeyWord()) {
+    case KeyWord::kStatic:
+      xml_writer_.AddTagWithContent("keyword", "static");
+      break;
+
+    case KeyWord::kField:
+      xml_writer_.AddTagWithContent("keyword", "field");
+      break;
+
+    default: {
+      std::cerr << "Expected static or field" << std::endl;
+      exit(1);
+    }
+  }
+  tokenizer_.Advance();
+  switch (tokenizer_.GetTokenType()) {
+    case TokenType::kKeyWord: {
+      switch (tokenizer_.GetKeyWord()) {
+        case KeyWord::kInt: {
+          xml_writer_.AddTagWithContent("keyword", "int");
+          break;
+        }
+
+        case KeyWord::kChar: {
+          xml_writer_.AddTagWithContent("keyword", "char");
+          break;
+        }
+
+        case KeyWord::kBoolean: {
+          xml_writer_.AddTagWithContent("keyword", "boolean");
+          break;
+        }
+
+        default: {
+          std::cerr << "Expected int, char or boolean" << std::endl;
+          break;
+        }
+      }
+      break;
+    }
+
+    case TokenType::kIdentifier: {
+      xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
+      break;
+    }
+
+    default: {
+      std::cerr << "Expected int, char, boolean or class name" << std::endl;
+      exit(1);
+    }
+  }
+
+  // get the identifier list
+  do {
+    // hacky, to add the comma.
+    if (tokenizer_.GetTokenType() == TokenType::kSymbol) {
+      xml_writer_.AddTagWithContent("symbol", ",");
+    }
+    tokenizer_.Advance();
+    if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
+      std::cerr << "Expected identifier" << std::endl;
+      exit(1);
+    }
+    xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
+    tokenizer_.Advance();
+  } while (tokenizer_.GetTokenType() == TokenType::kSymbol
+           && tokenizer_.GetSymbol() == ',');
+
+  ExpectSymbol(';');
+
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileSubroutine() {
