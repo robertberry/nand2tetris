@@ -64,6 +64,8 @@ class CompilationEngine final {
 
   void CompileSubroutineCall();
 
+  void CompileType();
+
   static bool IsOp(char ch);
 
   static std::string EscapeForXml(char ch);

@@ -199,5 +199,30 @@ static int x, y;
 </classVarDec>)xml");
 }
 
+TEST(CompilationEngineTest, ParameterListToXml) {
+  std::istringstream input(R"jack(
+(int x, int y, OutputStream outputStream)
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileParameterList();
+
+  EXPECT_EQ(output.str(), R"xml(<parameterList>
+  <symbol>(</symbol>
+  <keyword>int</keyword>
+  <identifier>x</identifier>
+  <symbol>,</symbol>
+  <keyword>int</keyword>
+  <identifier>y</identifier>
+  <symbol>,</symbol>
+  <className>OutputStream</className>
+  <identifier>outputStream</identifier>
+  <symbol>)</symbol>
+</parameterList>)xml");
+}
+
 }  // namespace
 }  // namespace jack
