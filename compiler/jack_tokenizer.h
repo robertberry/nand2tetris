@@ -69,6 +69,10 @@ class JackTokenizer final {
   // If GetTokenType returns kStringConst, returns the string value of it.
   std::string GetStringVal();
 
+  bool NextIsSymbol(char symbol);
+
+  bool NextIsKeyWord(KeyWord key_word);
+
  private:
   std::istream& input_;
 

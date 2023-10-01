@@ -46,6 +46,7 @@ std::ostream& operator<<(std::ostream& out, const KeyWord key_word) {
       break;
     }
   }
+  return out;
 }
 
 bool JackTokenizer::HasMoreTokens() {
@@ -250,6 +251,14 @@ std::optional<KeyWord> JackTokenizer::GetKeyWord(std::string_view identifier) {
     }
   }
   return {};
+}
+
+bool JackTokenizer::NextIsSymbol(char symbol) {
+  return token_type_ == TokenType::kSymbol && symbol_ == symbol;
+}
+
+bool JackTokenizer::NextIsKeyWord(KeyWord key_word) {
+  return token_type_ == TokenType::kKeyWord && key_word_ == key_word;
 }
 
 }  // namespace jack

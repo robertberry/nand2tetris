@@ -48,8 +48,7 @@ void CompilationEngine::CompileClassVarDec() {
     }
     xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
     tokenizer_.Advance();
-  } while (tokenizer_.GetTokenType() == TokenType::kSymbol
-           && tokenizer_.GetSymbol() == ',');
+  } while (tokenizer_.NextIsSymbol(','));
 
   ExpectSymbol(';');
 
@@ -72,8 +71,7 @@ void CompilationEngine::CompileParameterList() {
     }
     xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
     tokenizer_.Advance();
-    more = (tokenizer_.GetTokenType() == TokenType::kSymbol &&
-            tokenizer_.GetSymbol() == ',');
+    more = tokenizer_.NextIsSymbol(',');;
     if (more) {
       ExpectSymbol(',');
     }
@@ -85,8 +83,7 @@ void CompilationEngine::CompileParameterList() {
 void CompilationEngine::CompileSubroutineBody() {
   xml_writer_.OpenTag("subroutineBody");
   ExpectSymbol('{');
-  while (tokenizer_.GetTokenType() == TokenType::kKeyWord &&
-         tokenizer_.GetKeyWord() == KeyWord::kVar) {
+  while (tokenizer_.NextIsKeyWord(KeyWord::kVar)) {
     CompileVarDec();
   }
   CompileStatements();
@@ -108,8 +105,7 @@ void CompilationEngine::CompileVarDec() {
 
     xml_writer_.AddTagWithContent("varName", tokenizer_.GetIdentifier());
     tokenizer_.Advance();
-    more = (tokenizer_.GetTokenType() == TokenType::kSymbol &&
-            tokenizer_.GetSymbol() == ',');
+    more = tokenizer_.NextIsSymbol(',');
     if (more) {
       ExpectSymbol(',');
     }
@@ -199,8 +195,7 @@ void CompilationEngine::CompileDo() {
 void CompilationEngine::CompileReturn() {
   ExpectKeyWord(KeyWord::kReturn);
   xml_writer_.OpenTag("returnStatement");
-  if (!(tokenizer_.GetTokenType() == TokenType::kSymbol &&
-        tokenizer_.GetSymbol() == ';')) {
+  if (!tokenizer_.NextIsSymbol(';')) {
     CompileExpression();
   }
   ExpectSymbol(';');
@@ -247,8 +242,7 @@ void CompilationEngine::CompileTerm() {
 
 int CompilationEngine::CompileExpressionList() {
   xml_writer_.OpenTag("expressionList");
-  if (tokenizer_.GetTokenType() == TokenType::kSymbol
-      && tokenizer_.GetSymbol() == ')') {
+  if (tokenizer_.NextIsSymbol(')')) {
     // zero-length expression list.
     xml_writer_.CloseTag();
     return 0;
@@ -256,8 +250,7 @@ int CompilationEngine::CompileExpressionList() {
   
   CompileExpression();
   int size = 1;
-  while (tokenizer_.GetTokenType() == TokenType::kSymbol
-         && tokenizer_.GetSymbol() == ',') {
+  while (tokenizer_.NextIsSymbol(',')) {
     ExpectSymbol(',');
     CompileExpression();
     size++;
@@ -267,8 +260,7 @@ int CompilationEngine::CompileExpressionList() {
 }
 
 void CompilationEngine::ExpectKeyWord(KeyWord key_word) {
-  if (tokenizer_.GetTokenType() != TokenType::kKeyWord ||
-      tokenizer_.GetKeyWord() != key_word) {
+  if (!tokenizer_.NextIsKeyWord(key_word)) {
     std::cerr << "Expected key word " << key_word << std::endl;
     exit(1);
   }
@@ -276,8 +268,7 @@ void CompilationEngine::ExpectKeyWord(KeyWord key_word) {
 }
 
 void CompilationEngine::ExpectSymbol(char symbol) {
-  if (tokenizer_.GetTokenType() != TokenType::kSymbol ||
-      tokenizer_.GetSymbol() != symbol) {
+  if (!tokenizer_.NextIsSymbol(symbol)) {
     std::cerr << "Expected symbol " << symbol << std::endl;
     exit(1);
   }
