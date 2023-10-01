@@ -83,7 +83,15 @@ void CompilationEngine::CompileParameterList() {
 }
 
 void CompilationEngine::CompileSubroutineBody() {
-  // TODO
+  xml_writer_.OpenTag("subroutineBody");
+  ExpectSymbol('{');
+  while (tokenizer_.GetTokenType() == TokenType::kKeyWord &&
+         tokenizer_.GetKeyWord() == KeyWord::kVar) {
+    CompileVarDec();
+  }
+  CompileStatements();
+  ExpectSymbol('}');
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileVarDec() {

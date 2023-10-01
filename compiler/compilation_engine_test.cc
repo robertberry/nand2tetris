@@ -224,7 +224,7 @@ TEST(CompilationEngineTest, ParameterListToXml) {
 </parameterList>)xml");
 }
 
-TEST(CompilationEngineTEst, VarDecToXml) {
+TEST(CompilationEngineTest, VarDecToXml) {
   std::istringstream input(R"jack(
 var int a, b, c, d;
 )jack");
@@ -246,6 +246,78 @@ var int a, b, c, d;
   <varName>d</varName>
   <symbol>;</symbol>
 </varDec>)xml");
+}
+
+TEST(CompilationEngineTEst, SubroutineBodyToXml) {
+  std::istringstream input(R"jack(
+{
+  var int a, b;
+  let a = 1;
+  let b = 2;
+  do thing(a, b);
+}
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileSubroutineBody();
+
+  EXPECT_EQ(output.str(), R"xml(<subroutineBody>
+  <symbol>{</symbol>
+  <varDec>
+    <keyword>int</keyword>
+    <varName>a</varName>
+    <symbol>,</symbol>
+    <varName>b</varName>
+    <symbol>;</symbol>
+  </varDec>
+  <statements>
+    <letStatement>
+      <varName>a</varName>
+      <symbol>=</symbol>
+      <expression>
+        <term>
+          <intConst>1</intConst>
+        </term>
+      </expression>
+      <symbol>;</symbol>
+    </letStatement>
+    <letStatement>
+      <varName>b</varName>
+      <symbol>=</symbol>
+      <expression>
+        <term>
+          <intConst>2</intConst>
+        </term>
+      </expression>
+      <symbol>;</symbol>
+    </letStatement>
+    <doStatement>
+      <subroutineCall>
+        <subroutineName>thing</subroutineName>
+        <symbol>(</symbol>
+        <expressionList>
+          <expression>
+            <term>
+              <varName>a</varName>
+            </term>
+          </expression>
+          <symbol>,</symbol>
+          <expression>
+            <term>
+              <varName>b</varName>
+            </term>
+          </expression>
+        </expressionList>
+        <symbol>)</symbol>
+      </subroutineCall>
+      <symbol>;</symbol>
+    </doStatement>
+  </statements>
+  <symbol>}</symbol>
+</subroutineBody>)xml");
 }
 
 }  // namespace
