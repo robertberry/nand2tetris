@@ -224,5 +224,29 @@ TEST(CompilationEngineTest, ParameterListToXml) {
 </parameterList>)xml");
 }
 
+TEST(CompilationEngineTEst, VarDecToXml) {
+  std::istringstream input(R"jack(
+var int a, b, c, d;
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileVarDec();
+
+  EXPECT_EQ(output.str(), R"xml(<varDec>
+  <keyword>int</keyword>
+  <varName>a</varName>
+  <symbol>,</symbol>
+  <varName>b</varName>
+  <symbol>,</symbol>
+  <varName>c</varName>
+  <symbol>,</symbol>
+  <varName>d</varName>
+  <symbol>;</symbol>
+</varDec>)xml");
+}
+
 }  // namespace
 }  // namespace jack

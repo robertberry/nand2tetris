@@ -87,7 +87,28 @@ void CompilationEngine::CompileSubroutineBody() {
 }
 
 void CompilationEngine::CompileVarDec() {
-  // TODO
+  ExpectKeyWord(KeyWord::kVar);
+  xml_writer_.OpenTag("varDec");
+  CompileType();
+
+  bool more = true;
+  do {
+    if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
+      std::cerr << "Expected var name" << std::endl;
+      exit(1);
+    }
+
+    xml_writer_.AddTagWithContent("varName", tokenizer_.GetIdentifier());
+    tokenizer_.Advance();
+    more = (tokenizer_.GetTokenType() == TokenType::kSymbol &&
+            tokenizer_.GetSymbol() == ',');
+    if (more) {
+      ExpectSymbol(',');
+    }
+  } while (more);
+
+  ExpectSymbol(';');
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileStatements() {
