@@ -320,5 +320,56 @@ TEST(CompilationEngineTEst, SubroutineBodyToXml) {
 </subroutineBody>)xml");
 }
 
+TEST(CompilationEngineTest, SubroutineToXml) {
+  std::istringstream input(R"jack(
+function void close() {
+  do shutdown();
+  do release();
+}
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileSubroutine();
+
+  EXPECT_EQ(output.str(), R"xml(<subroutineDec>
+  <keyword>function</keyword>
+  <keyword>void</keyword>
+  <subroutineName>close</subroutineName>
+  <parameterList>
+    <symbol>(</symbol>
+    <symbol>)</symbol>
+  </parameterList>
+  <subroutineBody>
+    <symbol>{</symbol>
+    <statements>
+      <doStatement>
+        <subroutineCall>
+          <subroutineName>shutdown</subroutineName>
+          <symbol>(</symbol>
+          <expressionList>
+          </expressionList>
+          <symbol>)</symbol>
+        </subroutineCall>
+        <symbol>;</symbol>
+      </doStatement>
+      <doStatement>
+        <subroutineCall>
+          <subroutineName>release</subroutineName>
+          <symbol>(</symbol>
+          <expressionList>
+          </expressionList>
+          <symbol>)</symbol>
+        </subroutineCall>
+        <symbol>;</symbol>
+      </doStatement>
+    </statements>
+    <symbol>}</symbol>
+  </subroutineBody>
+</subroutineDec>)xml");
+}
+
 }  // namespace
 }  // namespace jack

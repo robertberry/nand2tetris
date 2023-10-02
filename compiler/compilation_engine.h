@@ -66,6 +66,10 @@ class CompilationEngine final {
 
   void CompileType();
 
+  std::string AssertIdentifier();
+
+  KeyWord AssertKeyWord();
+
   static bool IsOp(char ch);
 
   static std::string EscapeForXml(char ch);

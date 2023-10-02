@@ -14,11 +14,7 @@ void CompilationEngine::CompileClass() {
 
 void CompilationEngine::CompileClassVarDec() {
   xml_writer_.OpenTag("classVarDec");
-  if (tokenizer_.GetTokenType() != TokenType::kKeyWord) {
-    std::cerr << "Expected static or field" << std::endl;
-    exit(1);
-  }
-  switch (tokenizer_.GetKeyWord()) {
+  switch (AssertKeyWord()) {
     case KeyWord::kStatic:
       xml_writer_.AddTagWithContent("keyword", "static");
       break;
@@ -32,7 +28,6 @@ void CompilationEngine::CompileClassVarDec() {
       exit(1);
     }
   }
-  tokenizer_.Advance();
   CompileType();
 
   // get the identifier list
@@ -42,12 +37,7 @@ void CompilationEngine::CompileClassVarDec() {
       xml_writer_.AddTagWithContent("symbol", ",");
       tokenizer_.Advance();
     }
-    if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
-      std::cerr << "Expected identifier" << std::endl;
-      exit(1);
-    }
-    xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
-    tokenizer_.Advance();
+    xml_writer_.AddTagWithContent("identifier", AssertIdentifier());
   } while (tokenizer_.NextIsSymbol(','));
 
   ExpectSymbol(';');
@@ -56,26 +46,54 @@ void CompilationEngine::CompileClassVarDec() {
 }
 
 void CompilationEngine::CompileSubroutine() {
-  // TODO
+  xml_writer_.OpenTag("subroutineDec");
+  switch (AssertKeyWord()) {
+    case KeyWord::kConstructor: {
+      xml_writer_.AddTagWithContent("keyword", "constructor");
+      break;
+    }
+
+    case KeyWord::kFunction: {
+      xml_writer_.AddTagWithContent("keyword", "function");
+      break;
+    }
+
+    case KeyWord::kMethod: {
+      xml_writer_.AddTagWithContent("keyword", "method");
+      break;
+    }
+
+    default: {
+      std::cerr << "Expected constructor|function|method" << std::endl;
+      exit(1);
+    }
+  }
+  if (tokenizer_.NextIsKeyWord(KeyWord::kVoid)) {
+    xml_writer_.AddTagWithContent("keyword", "void");
+    tokenizer_.Advance();
+  } else {
+    CompileType();
+  }
+  xml_writer_.AddTagWithContent("subroutineName", AssertIdentifier());
+  CompileParameterList();
+  CompileSubroutineBody();
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileParameterList() {
   xml_writer_.OpenTag("parameterList");
   ExpectSymbol('(');
-  bool more = true;
-  do {
-    CompileType();
-    if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
-      std::cerr << "Expected identifier" << std::endl;
-      exit(1);
-    }
-    xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
-    tokenizer_.Advance();
-    more = tokenizer_.NextIsSymbol(',');;
-    if (more) {
-      ExpectSymbol(',');
-    }
-  } while (more);
+  if (!tokenizer_.NextIsSymbol(')')) {
+    bool more = true;
+    do {
+      CompileType();
+      xml_writer_.AddTagWithContent("identifier", AssertIdentifier());
+      more = tokenizer_.NextIsSymbol(',');;
+      if (more) {
+        ExpectSymbol(',');
+      }
+    } while (more);
+  }
   ExpectSymbol(')');
   xml_writer_.CloseTag();
 }
@@ -98,13 +116,7 @@ void CompilationEngine::CompileVarDec() {
 
   bool more = true;
   do {
-    if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
-      std::cerr << "Expected var name" << std::endl;
-      exit(1);
-    }
-
-    xml_writer_.AddTagWithContent("varName", tokenizer_.GetIdentifier());
-    tokenizer_.Advance();
+    xml_writer_.AddTagWithContent("varName", AssertIdentifier());
     more = tokenizer_.NextIsSymbol(',');
     if (more) {
       ExpectSymbol(',');
@@ -298,30 +310,15 @@ void CompilationEngine::ExpectStringConst() {
 }
 
 void CompilationEngine::ExpectIdentifier() {
-  if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
-    std::cerr << "Expected identifier" << std::endl;
-    exit(1);
-  }
-  xml_writer_.AddTagWithContent("identifier", tokenizer_.GetIdentifier());
-  tokenizer_.Advance();
+  xml_writer_.AddTagWithContent("identifier", AssertIdentifier());
 }
 
 void CompilationEngine::CompileVarName() {
-  if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
-    std::cerr << "Expected identifier" << std::endl;
-    exit(1);
-  }
-  xml_writer_.AddTagWithContent("varName", tokenizer_.GetIdentifier());
-  tokenizer_.Advance();
+  xml_writer_.AddTagWithContent("varName", AssertIdentifier());
 }
 
 void CompilationEngine::CompileSubroutineName() {
-  if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
-    std::cerr << "Expected identifier" << std::endl;
-    exit(1);
-  }
-  xml_writer_.AddTagWithContent("subroutineName", tokenizer_.GetIdentifier());
-  tokenizer_.Advance();
+  xml_writer_.AddTagWithContent("subroutineName", AssertIdentifier());
 }
 
 void CompilationEngine::CompileSubroutineCall() {
@@ -395,6 +392,26 @@ void CompilationEngine::CompileType() {
     }
   }
   tokenizer_.Advance();
+}
+
+std::string CompilationEngine::AssertIdentifier() {
+  if (tokenizer_.GetTokenType() != TokenType::kIdentifier) {
+    std::cerr << "Expected identifier" << std::endl;
+    exit(1);
+  }
+  std::string identifier = tokenizer_.GetIdentifier();
+  tokenizer_.Advance();
+  return identifier;
+}
+
+KeyWord CompilationEngine::AssertKeyWord() {
+  if (tokenizer_.GetTokenType() != TokenType::kKeyWord) {
+    std::cerr << "Expected keyword" << std::endl;
+    exit(1);
+  }
+  KeyWord key_word = tokenizer_.GetKeyWord();
+  tokenizer_.Advance();
+  return key_word;
 }
 
 }  // namespace jack
