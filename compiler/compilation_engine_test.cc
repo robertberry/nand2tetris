@@ -414,7 +414,7 @@ class IoStream {
   static int n_instances;
 
   method void close() {
-    do shutdown();
+    do IoEngine.shutdown();
   }
 }
 )jack");
@@ -453,6 +453,8 @@ class IoStream {
       <statements>
         <doStatement>
           <subroutineCall>
+            <identifier>IoEngine</identifier>
+            <symbol>.</symbol>
             <subroutineName>shutdown</subroutineName>
             <symbol>(</symbol>
             <expressionList>

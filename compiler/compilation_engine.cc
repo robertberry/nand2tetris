@@ -338,12 +338,18 @@ void CompilationEngine::CompileSubroutineName() {
 
 void CompilationEngine::CompileSubroutineCall() {
   xml_writer_.OpenTag("subroutineCall");
-  CompileSubroutineName();
+  std::string first_identifier = AssertIdentifier();
+  if (tokenizer_.NextIsSymbol('.')) {
+    xml_writer_.AddTagWithContent("identifier", first_identifier);
+    ExpectSymbol('.');
+    CompileSubroutineName();
+  } else {
+    xml_writer_.AddTagWithContent("subroutineName", first_identifier);
+  }
   ExpectSymbol('(');
   CompileExpressionList();
   ExpectSymbol(')');
   xml_writer_.CloseTag();
-  // TODO: also support method calls.
 }
 
 bool CompilationEngine::IsOp(char ch) {
