@@ -70,6 +70,8 @@ class CompilationEngine final {
 
   KeyWord AssertKeyWord();
 
+  bool IsClassVarDecKeyWord(KeyWord key_word);
+
   static bool IsOp(char ch);
 
   static std::string EscapeForXml(char ch);

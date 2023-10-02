@@ -9,7 +9,19 @@ constexpr char kOps[] = {
 };
 
 void CompilationEngine::CompileClass() {
-  // TODO
+  xml_writer_.OpenTag("classDec");
+  ExpectKeyWord(KeyWord::kClass);
+  xml_writer_.AddTagWithContent("className", AssertIdentifier());
+  ExpectSymbol('{');
+  while (tokenizer_.GetTokenType() == TokenType::kKeyWord &&
+         IsClassVarDecKeyWord(tokenizer_.GetKeyWord())) {
+    CompileClassVarDec();
+  }
+  while (!tokenizer_.NextIsSymbol('}')) {
+    CompileSubroutine();
+  }
+  ExpectSymbol('}');
+  xml_writer_.CloseTag();
 }
 
 void CompilationEngine::CompileClassVarDec() {
@@ -412,6 +424,10 @@ KeyWord CompilationEngine::AssertKeyWord() {
   KeyWord key_word = tokenizer_.GetKeyWord();
   tokenizer_.Advance();
   return key_word;
+}
+
+bool CompilationEngine::IsClassVarDecKeyWord(KeyWord key_word) {
+  return key_word == KeyWord::kStatic || key_word == KeyWord::kField;
 }
 
 }  // namespace jack

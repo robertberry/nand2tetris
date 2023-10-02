@@ -371,5 +371,68 @@ function void close() {
 </subroutineDec>)xml");
 }
 
+TEST(CompilationEngineTest, ClassToXml) {
+  std::istringstream input(R"jack(
+class IoStream {
+
+  field int channel;
+  static int n_instances;
+
+  method void close() {
+    do shutdown();
+  }
+}
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileClass();
+
+  EXPECT_EQ(output.str(), R"xml(<classDec>
+  <className>IoStream</className>
+  <symbol>{</symbol>
+  <classVarDec>
+    <keyword>field</keyword>
+    <keyword>int</keyword>
+    <identifier>channel</identifier>
+    <symbol>;</symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword>static</keyword>
+    <keyword>int</keyword>
+    <identifier>n_instances</identifier>
+    <symbol>;</symbol>
+  </classVarDec>
+  <subroutineDec>
+    <keyword>method</keyword>
+    <keyword>void</keyword>
+    <subroutineName>close</subroutineName>
+    <parameterList>
+      <symbol>(</symbol>
+      <symbol>)</symbol>
+    </parameterList>
+    <subroutineBody>
+      <symbol>{</symbol>
+      <statements>
+        <doStatement>
+          <subroutineCall>
+            <subroutineName>shutdown</subroutineName>
+            <symbol>(</symbol>
+            <expressionList>
+            </expressionList>
+            <symbol>)</symbol>
+          </subroutineCall>
+          <symbol>;</symbol>
+        </doStatement>
+      </statements>
+      <symbol>}</symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol>}</symbol>
+</classDec>)xml");
+}
+
 }  // namespace
 }  // namespace jack
