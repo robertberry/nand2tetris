@@ -123,6 +123,41 @@ let shiba = "bonchon";
 </letStatement>)xml");
 }
 
+TEST(CompilationEngineTest, LetStatementWithIndexToXml) {
+  std::istringstream input(R"jack(
+let shiba[n + 2] = "bonchon";
+)jack");
+  JackTokenizer tokenizer(input);
+  tokenizer.Advance();
+  std::ostringstream output;
+  CompilationEngine engine(tokenizer, output);
+  
+  engine.CompileLet();
+
+  EXPECT_EQ(output.str(), R"xml(<letStatement>
+  <varName>shiba</varName>
+  <symbol>[</symbol>
+  <expression>
+    <term>
+      <varName>n</varName>
+    </term>
+    <op>+</op>
+    <term>
+      <intConst>2</intConst>
+    </term>
+  </expression>
+  <symbol>]</symbol>
+  <symbol>=</symbol>
+  <expression>
+    <term>
+      <stringConst>bonchon</stringConst>
+    </term>
+  </expression>
+  <symbol>;</symbol>
+</letStatement>)xml");
+}
+
+
 TEST(CompilationEngineTest, ReturnStatementToXml) {
   std::istringstream input(R"jack(
 return 42;

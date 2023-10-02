@@ -176,8 +176,11 @@ void CompilationEngine::CompileLet() {
   ExpectKeyWord(KeyWord::kLet);
   xml_writer_.OpenTag("letStatement");
   CompileVarName();
-
-  // TODO: Support array indexing.
+  if (tokenizer_.NextIsSymbol('[')) {
+    ExpectSymbol('[');
+    CompileExpression();
+    ExpectSymbol(']');
+  }
   ExpectSymbol('=');
   CompileExpression();
   ExpectSymbol(';');
